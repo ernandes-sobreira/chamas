@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Turfeiras do Pantanal · Daiana F. Dias</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,sans-serif;background:#FAFAF8}
+header{background:#fff;border-bottom:2px solid #E5E0D8;padding:0 12px;height:60px;position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.hb{display:flex;align-items:center;gap:9px}
+.hfire{width:36px;height:36px;background:linear-gradient(160deg,#C84B11,#78350F);border-radius:50% 50% 48% 48%/58% 58% 42% 42%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;animation:flk 3s ease-in-out infinite}
+@keyframes flk{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.92) scaleX(1.04)}}
+.h1{font-weight:800;font-size:13px;color:#1C1410;line-height:1.15}
+.h2{font-size:8px;color:#9A8A7E;letter-spacing:.07em;text-transform:uppercase}
+#fbst{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
+nav{display:flex;background:#fff;border-bottom:1px solid #E5E0D8;position:sticky;top:60px;z-index:190;overflow-x:auto}
+nav::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:9px 10px 8px;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;color:#7A6A5E;font-size:9.5px;font-weight:400;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:system-ui,sans-serif}
+.tab.on{color:#C84B11;border-bottom-color:#C84B11;font-weight:700}
+.tic{font-size:16px}
+.pnl{display:none;padding:6px 6px 24px}
+.pnl.on{display:block}
+svg{display:block;width:100%}
+.lc{margin:4px 0 8px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #E5E0D8;box-shadow:0 2px 8px rgba(0,0,0,.06);display:none}
+.lch{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.lcg{padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:7px 18px}
+.lk{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.05em}
+.lv{font-size:13px;font-weight:700;color:#1C1410;margin-top:1px}
+.sws{padding:0 0 14px}.swl{font-size:9px;color:#aaa;margin-bottom:5px;letter-spacing:.07em;text-transform:uppercase}
+.swr{display:flex;gap:5px;flex-wrap:wrap}
+.swb{width:28px;height:28px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,0,0,.14);transition:all .15s}
+.swb.on{border:2.5px solid #C84B11;transform:scale(1.2)}
+.bbar{margin:0 0 6px;background:#E5E0D8;border-radius:8px;height:8px;overflow:hidden}
+.bfill{height:100%;background:linear-gradient(90deg,#1C0900,#C84B11,#FCD34D);transition:width .6s;border-radius:8px;width:0%}
+.binfo{margin:6px 0 8px;padding:8px 12px;background:#FFF7ED;border-radius:8px;border:1px solid #FED7AA;display:none;justify-content:space-between;align-items:center;gap:8px}
+.bbtns{display:flex;gap:8px;padding-bottom:10px}
+.bgo{flex:1;padding:12px;border-radius:10px;border:none;background:#C84B11;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif}
+.brst{padding:12px 16px;border-radius:10px;border:1px solid #E5E0D8;background:#fff;color:#666;font-size:14px;cursor:pointer;font-family:system-ui,sans-serif}
+.fc{margin:4px 0 14px;background:#fff;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden}
+.fh{background:#0369A1;padding:10px 14px;color:#fff;font-weight:700;font-size:13px}
+.fr{display:flex;justify-content:space-between;padding:5px 14px;border-bottom:1px solid #F5F0EA;font-size:12px}
+.fr:last-child{border:none}.fk{color:#888}.fv{font-weight:600;color:#1C1410;text-align:right;max-width:55%}
+.ahero{padding:16px;background:linear-gradient(135deg,#1C0900 0%,#78350F 55%,#C84B11 100%);border-radius:14px;color:#fff;margin-bottom:12px}
+.ahtitle{font-size:15px;font-weight:800;line-height:1.35;margin-bottom:6px}
+.ahsub{font-size:9px;color:rgba(255,255,255,.65);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
+.acards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.acard{background:#fff;border:1px solid #E5E0D8;border-radius:12px;overflow:hidden}
+.atop{padding:11px 14px;display:flex;align-items:flex-start;gap:10px}
+.anum{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.atitle{font-size:12.5px;font-weight:700;color:#1C1410;line-height:1.4}
+.ajour{font-size:10px;color:#888;margin-top:3px}
+.abody{padding:10px 14px 12px;font-size:11.5px;color:#555;line-height:1.6;border-top:1px solid #F5F0EA}
+.abadge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-right:4px;margin-top:4px}
+.sec{margin:8px 0;background:#fff;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden}
+.sec-h{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.sec-t{font-weight:700;font-size:13px;color:#1C1410;display:flex;align-items:center;gap:8px}
+.sec-b{padding:12px 14px}
+.fl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;margin-top:11px}
+.fl:first-child{margin-top:0}
+.ff{width:100%;padding:9px 11px;border:1.5px solid #E5E0D8;border-radius:8px;font-size:12.5px;font-family:system-ui,sans-serif;color:#1C1410;background:#FAFAF8;resize:vertical;line-height:1.55;transition:border-color .15s}
+.ff:focus{outline:none;border-color:#C84B11;background:#fff}
+.savebtn{margin-top:12px;width:100%;padding:12px;border-radius:10px;border:none;background:#C84B11;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.savebtn:disabled{background:#ccc}
+#pmsg{text-align:center;font-size:10.5px;color:#aaa;margin-top:7px}
+.trow{display:flex;gap:5px;flex-wrap:wrap;padding:6px 0 8px}
+.tgb{padding:4px 11px;border-radius:14px;border:1.5px solid #E5E0D8;background:#fff;font-size:10px;cursor:pointer;font-family:system-ui,sans-serif;color:#7A6A5E;transition:all .15s}
+.ninp{width:100%;padding:10px 12px;border:1.5px solid #E5E0D8;border-radius:9px;font-size:12.5px;font-family:system-ui,sans-serif;background:#fff;resize:vertical;min-height:78px;transition:border-color .15s;margin-bottom:6px;display:block}
+.ninp:focus{outline:none;border-color:#C84B11}
+.nadd{width:100%;padding:11px;border-radius:9px;border:none;background:#C84B11;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;margin-bottom:12px}
+.nlist{display:flex;flex-direction:column;gap:8px;padding-bottom:16px}
+.ni{background:#fff;border:1px solid #E5E0D8;border-radius:10px;padding:11px 13px}
+.nit{font-size:12.5px;color:#1C1410;line-height:1.55;white-space:pre-wrap}
+.nim{font-size:9px;color:#bbb;margin-top:6px;display:flex;justify-content:space-between;align-items:center}
+.ndel{background:none;border:none;cursor:pointer;color:#DC2626;font-size:11px;padding:1px 5px;border-radius:4px}
+.ntag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.nemp{text-align:center;padding:24px;color:#ccc;font-size:12px}
+
+/* ══ TRINCHEIRA 3D ══ */
+#t3wrap{padding:4px 0 8px;text-align:center}
+#t3hint{font-size:10px;color:#C84B11;font-weight:700;padding:4px 0 2px;letter-spacing:.04em}
+#t3hint2{font-size:9px;color:#888;padding:0 0 8px}
+#t3scene{perspective:650px;perspective-origin:50% -10%;display:inline-block;cursor:grab}
+#t3box{
+  width:180px;
+  position:relative;
+  transform-style:preserve-3d;
+  transform:rotateX(30deg) rotateY(-30deg);
+  margin:30px auto 0;
+}
+/* O topo do box = abertura do buraco = CHÃO */
+/* Faces laterais mostram as camadas, topo=chão, fundo=turfa basal */
+.t3face{position:absolute;left:0;top:0;width:180px;overflow:hidden;backface-visibility:visible}
+/* face frontal: z=+depth/2, mostra camadas de cima p baixo */
+#t3front{transform-origin:top left} /* posicionado via JS */
+/* face direita */
+#t3right{transform-origin:top left}
+/* face esquerda */
+#t3left{transform-origin:top right}
+/* TOPO = chão = verde */
+#t3top{
+  width:180px;height:90px;
+  background:linear-gradient(135deg,#3A6020 0%,#5A8A35 50%,#4A7028 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:rgba(255,255,255,.85);
+  letter-spacing:.08em;border:2px solid #2A4A18;
+}
+#t3bot{width:180px;height:90px} /* preenchido pela última camada */
+.t3layer{
+  width:100%;cursor:pointer;position:relative;
+  display:flex;align-items:center;
+  border-bottom:1px solid rgba(0,0,0,0.18);
+  flex-shrink:0;
+}
+.t3layer:hover{filter:brightness(1.35)!important}
+.t3layer.sel{outline:3px solid #F97316;outline-offset:-2px;filter:brightness(1.3)!important}
+.t3lname{font-size:7px;font-weight:700;color:rgba(255,255,255,0.82);padding-left:5px;pointer-events:none;white-space:nowrap;overflow:hidden}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hb">
+    <div class="hfire">🔥</div>
+    <div><div class="h1">Turfeiras do Pantanal</div><div class="h2">Doutorado PPGCA · UNEMAT · Daiana F. Dias · v2</div></div>
+  </div>
+  <div id="fbst">⬤ conectando</div>
+</header>
+
+<nav>
+  <button class="tab on" onclick="G('trench')"><span class="tic">⬜</span>Trincheira</button>
+  <button class="tab"    onclick="G('core')"  ><span class="tic">⬛</span>Core</button>
+  <button class="tab"    onclick="G('fatias')" ><span class="tic">🔬</span>Fatias</button>
+  <button class="tab"    onclick="G('bbq')"   ><span class="tic">🔥</span>Queima</button>
+  <button class="tab"    onclick="G('field')" ><span class="tic">📡</span>Campo</button>
+  <button class="tab"    onclick="G('inst')"  ><span class="tic">🛰</span>Instrumentos</button>
+  <button class="tab"    onclick="G('meso')"  ><span class="tic">🧪</span>Mesocosmos</button>
+  <button class="tab"    onclick="G('res')"   ><span class="tic">📊</span>Resultados</button>
+  <button class="tab"    onclick="G('art')"   ><span class="tic">📄</span>Artigos</button>
+  <button class="tab"    onclick="G('proj')"  ><span class="tic">📋</span>Projeto</button>
+  <button class="tab"    onclick="G('notas')" ><span class="tic">📝</span>Notas</button>
+</nav>
+
+<!-- TRINCHEIRA -->
+<div class="pnl on" id="p-trench">
+  <div id="t3wrap">
+    <div id="t3hint">☝ Arraste para girar o bloco</div>
+    <div id="t3hint2">Horizonte O no topo · turfeiras profundas no fundo</div>
+    <div id="t3scene"><div id="t3box"></div></div>
+  </div>
+  <div class="lc" id="lc-t">
+    <div class="lch" id="lch-t"><span style="color:#fff;font-weight:700;font-size:14px" id="ln-t"></span><span style="color:rgba(255,255,255,.75);font-size:12px" id="ld-t"></span></div>
+    <div class="lcg">
+      <div><div class="lk">Mat. Orgânica</div><div class="lv" id="mo-t"></div></div>
+      <div><div class="lk">Umidade</div><div class="lv" id="um-t"></div></div>
+      <div><div class="lk">Pot. Queima</div><div class="lv" id="fi-t"></div></div>
+      <div><div class="lk">Tipo</div><div class="lv" id="pt-t"></div></div>
+      <div><div class="lk">T. Ignição</div><div class="lv" id="ti-t" style="color:#C84B11"></div></div>
+    </div>
+  </div>
+  <div class="sws"><div class="swl">Camada rápida</div><div class="swr" id="sw-t"></div></div>
+</div>
+
+<!-- CORE -->
+<div class="pnl" id="p-core">
+  <div style="padding:6px 0 2px;text-align:center;font-size:10px;color:#0369A1;font-weight:700">
+    ☝ Arraste para girar · Toque numa fatia para ejetar
+  </div>
+  <div id="core-canvas-wrap" style="width:100%;height:420px;position:relative;touch-action:none"></div>
+  <div class="lc" id="lc-c">
+    <div class="lch" id="lch-c">
+      <span style="color:#fff;font-weight:700;font-size:14px" id="ln-c"></span>
+      <span style="color:rgba(255,255,255,.75);font-size:12px" id="ld-c"></span>
+    </div>
+    <div class="lcg">
+      <div><div class="lk">Profundidade</div><div class="lv" id="ld2-c"></div></div>
+      <div><div class="lk">Mat. Orgânica</div><div class="lv" id="mo-c"></div></div>
+      <div><div class="lk">Pot. Queima</div><div class="lv" id="fi-c"></div></div>
+      <div><div class="lk">Tipo</div><div class="lv" id="pt-c"></div></div>
+      <div><div class="lk">T. Ignição</div><div class="lv" id="ti-c" style="color:#C84B11"></div></div>
+    </div>
+  </div>
+  <div class="sws"><div class="swl">Horizonte rápido</div><div class="swr" id="sw-c"></div></div>
+</div>
+
+<!-- FATIAS -->
+<div class="pnl" id="p-fatias">
+
+  <!-- Seletor de fatias -->
+  <div style="padding:8px 4px 4px">
+    <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Selecionar 3 fatias para comparar</div>
+    <div id="fatia-sel-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
+    <div style="font-size:9px;color:#aaa;margin-bottom:8px">Toque nas fatias do selector acima para escolher quais comparar</div>
+  </div>
+
+  <!-- Canvas Three.js das 3 fatias -->
+  <div id="fatias-canvas-wrap" style="width:100%;height:260px;position:relative;touch-action:none;background:#F0F4F8;border-radius:12px;overflow:hidden;margin-bottom:10px"></div>
+
+  <!-- Cards de variáveis das 3 fatias -->
+  <div id="fatias-cards" style="display:flex;flex-direction:column;gap:10px;padding:0 0 16px"></div>
+
+</div>
+
+<!-- BBQ -->
+<div class="pnl" id="p-bbq">
+  <svg id="s-b" viewBox="0 0 340 225"></svg>
+  <div class="bbar"><div class="bfill" id="bfill"></div></div>
+  <div class="binfo" id="binfo"><div><div style="font-weight:700;color:#C84B11;font-size:13px" id="bbn"></div><div style="font-size:11px;color:#888" id="bbd"></div></div><div style="font-weight:700;font-size:12px;padding:3px 9px;border-radius:20px" id="bbf"></div></div>
+  <div class="bbtns"><button class="bgo" id="bbtn" onclick="bbqT()">▶ Iniciar Queima</button><button class="brst" onclick="bbqR()">↺</button></div>
+</div>
+
+<!-- CAMPO -->
+<div class="pnl" id="p-field">
+  <svg id="s-f" viewBox="0 0 340 275"></svg>
+  <div class="fc"><div class="fh">📡 Estação Meteorológica Central</div><div class="fr"><span class="fk">Posição</span><span class="fv">Centro do triângulo</span></div><div class="fr"><span class="fk">Sensores solo</span><span class="fv">T° a 5, 10, 20, 30 cm</span></div><div class="fr"><span class="fk">Sensores meteo</span><span class="fv">T°, UR, chuva, vento, rad.</span></div><div class="fr"><span class="fk">Transmissão</span><span class="fv">Wi-Fi → Firebase RT</span></div><div class="fr"><span class="fk">Frequência</span><span class="fv">15 minutos</span></div><div class="fr"><span class="fk">Lençol freático</span><span class="fv">Transdutor 4-20mA</span></div></div>
+</div>
+
+<!-- INSTRUMENTOS -->
+<div class="pnl" id="p-inst">
+  <div style="padding:6px 0 4px;text-align:center;font-size:9.5px;color:#0369A1;font-weight:700">
+    🛰 Toque num equipamento para ver detalhes
+  </div>
+  <!-- Cena SVG 2D — funciona offline, sem Three.js -->
+  <div id="inst-svg-wrap" style="width:100%;overflow:hidden;border-radius:12px;background:#D4E8C2"></div>
+  <div id="inst-card" style="display:none;margin:6px 0 8px;background:#fff;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+    <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;background:#F0F8FF">
+      <span id="inst-card-name" style="font-weight:700;font-size:13px;color:#1C1410"></span>
+      <span id="inst-card-tag" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:#0369A1;color:#fff"></span>
+    </div>
+    <div id="inst-card-body" style="padding:10px 14px 12px;font-size:12px;color:#555;line-height:1.65"></div>
+  </div>
+</div>
+
+<!-- MESOCOSMOS -->
+<div class="pnl" id="p-meso">
+  <div style="padding:6px 0 4px;text-align:center;font-size:10px;color:#0369A1;font-weight:700">
+    ☝ Arraste para orbitar · Pinça para zoom · Toque num mesocosmo
+  </div>
+
+  <!-- Seletor de FASE -->
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <button id="meso-fase-1" onclick="mesoSetFase(1)"
+      style="flex:1;padding:8px 4px;border-radius:10px;border:2px solid #0369A1;background:#0369A1;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif">
+      🔵 Fase 1<br><span style="font-size:8.5px;font-weight:400">Monitoramento</span>
+    </button>
+    <button id="meso-fase-2" onclick="mesoSetFase(2)"
+      style="flex:1;padding:8px 4px;border-radius:10px;border:2px solid #D97706;background:#fff;color:#D97706;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif">
+      🍂 Fase 2<br><span style="font-size:8.5px;font-weight:400">Serrapilheira</span>
+    </button>
+    <button id="meso-fase-3" onclick="mesoSetFase(3)"
+      style="flex:1;padding:8px 4px;border-radius:10px;border:2px solid #DC2626;background:#fff;color:#DC2626;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif">
+      🔥 Fase 3<br><span style="font-size:8.5px;font-weight:400">Queima</span>
+    </button>
+  </div>
+
+  <!-- Banner de fase -->
+  <div id="meso-fase-banner" style="padding:8px 12px;border-radius:10px;margin-bottom:8px;font-size:11px;line-height:1.5;background:#EFF6FF;border:1px solid #BAE6FD;color:#0C4A6E"></div>
+
+  <!-- Canvas 3D -->
+  <div id="meso-wrap" style="width:100%;height:400px;touch-action:none;background:#F0F4F8;border-radius:12px;overflow:hidden"></div>
+
+  <!-- Seletor de tratamento -->
+  <div style="margin:8px 0 4px;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px" id="meso-sel-row"></div>
+
+  <!-- Variáveis medidas (card) -->
+  <div style="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin:6px 0 8px">
+    <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">📊 Variáveis monitoradas em cada mesocosmo</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      <span style="background:#FEE2E2;color:#DC2626;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">CO₂ µmol m⁻² s⁻¹</span>
+      <span style="background:#EDE9FE;color:#7C3AED;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">CH₄ µmol m⁻² s⁻¹</span>
+      <span style="background:#EFF6FF;color:#0369A1;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">Umidade %</span>
+      <span style="background:#FEF3C7;color:#D97706;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">Temperatura °C</span>
+      <span style="background:#DCFCE7;color:#166534;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">Condutividade µS/cm</span>
+      <span style="background:#EDE9FE;color:#6D28D9;padding:4px 9px;border-radius:12px;font-size:10px;font-weight:700">pH</span>
+    </div>
+  </div>
+
+  <!-- Card info ao tocar -->
+  <div id="meso-card" style="display:none;background:#fff;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+    <div id="meso-card-head" style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+      <span id="meso-card-name" style="font-weight:700;font-size:14px;color:#1C1410"></span>
+      <span id="meso-card-tag" style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:#EFF6FF;color:#0369A1"></span>
+    </div>
+    <div id="meso-card-body" style="padding:0 14px 12px;font-size:12px;color:#555;line-height:1.65"></div>
+  </div>
+</div>
+
+<!-- RESULTADOS -->
+<div class="pnl" id="p-res">
+
+  <!-- Hero -->
+  <div style="margin:6px 0 10px;padding:14px 16px;background:linear-gradient(135deg,#166534,#16A34A,#22C55E);border-radius:14px;color:#fff">
+    <div style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:4px">Experimento Mesocosmos · Turfeiras do Pantanal</div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:4px">📊 Resultados &amp; Análise Estatística</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.8)">Upload CSV/XLSX · Séries temporais · Comparativo por tratamento · Regressão</div>
+  </div>
+
+  <!-- Upload de dados -->
+  <div style="background:#fff;border-radius:12px;border:2px dashed #86EFAC;padding:14px;margin-bottom:10px;text-align:center">
+    <div style="font-size:11px;font-weight:700;color:#166534;margin-bottom:8px">📂 Carregar dados (CSV ou XLSX)</div>
+    <div style="font-size:10px;color:#888;margin-bottom:10px">Colunas esperadas: Tratamento, Réplica, Condição, Medição (data), + variáveis numéricas</div>
+    <input type="file" id="res-file-input" accept=".csv,.xlsx,.xls"
+      style="font-size:11px;color:#555;max-width:100%"
+      onchange="resLoadFile(this)">
+    <div id="res-load-msg" style="margin-top:6px;font-size:10.5px;color:#166534;font-weight:700"></div>
+  </div>
+
+  <!-- Controles -->
+  <div id="res-controls" style="display:none">
+
+    <!-- Seletor de variável -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:8px">
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Variável</div>
+      <div id="res-var-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Seletor de datas -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:8px">
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Datas (selecione para comparar)</div>
+      <div id="res-date-btns" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Seletor de tratamentos -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:8px">
+      <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Tratamentos</div>
+      <div id="res-trat-btns" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Sub-abas de análise -->
+    <div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto">
+      <button id="res-tab-time" onclick="resSetTab('time')"
+        style="flex-shrink:0;padding:7px 12px;border-radius:10px;border:2px solid #0369A1;background:#0369A1;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui">📈 Temporal</button>
+      <button id="res-tab-comp" onclick="resSetTab('comp')"
+        style="flex-shrink:0;padding:7px 12px;border-radius:10px;border:2px solid #0369A1;background:#fff;color:#0369A1;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui">📊 Comparativo</button>
+      <button id="res-tab-stat" onclick="resSetTab('stat')"
+        style="flex-shrink:0;padding:7px 12px;border-radius:10px;border:2px solid #0369A1;background:#fff;color:#0369A1;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui">📐 Estatística</button>
+      <button id="res-tab-reg" onclick="resSetTab('reg')"
+        style="flex-shrink:0;padding:7px 12px;border-radius:10px;border:2px solid #0369A1;background:#fff;color:#0369A1;font-size:10px;font-weight:700;cursor:pointer;font-family:system-ui">📉 Regressão</button>
+    </div>
+
+    <!-- Painel temporal -->
+    <div id="res-panel-time" style="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:8px">
+      <div id="res-time-title" style="font-size:11px;font-weight:700;color:#0369A1;margin-bottom:8px"></div>
+      <svg id="res-chart-time" viewBox="0 0 340 160" style="display:block;width:100%"></svg>
+      <div id="res-time-legend" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div>
+    </div>
+
+    <!-- Painel comparativo (box plot simplificado) -->
+    <div id="res-panel-comp" style="display:none;background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:#0369A1;margin-bottom:8px">Comparativo por tratamento</div>
+      <svg id="res-chart-comp" viewBox="0 0 340 180" style="display:block;width:100%"></svg>
+    </div>
+
+    <!-- Painel estatístico -->
+    <div id="res-panel-stat" style="display:none;background:#fff;border-radius:12px;border:1px solid #E5E0D8;overflow:hidden;margin-bottom:8px">
+      <div style="background:#0369A1;padding:10px 14px;color:#fff;font-weight:700;font-size:12px">📐 Estatística Descritiva por Tratamento</div>
+      <div id="res-stat-body" style="overflow-x:auto"></div>
+    </div>
+
+    <!-- Painel regressão -->
+    <div id="res-panel-reg" style="display:none;background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;color:#0369A1;margin-bottom:8px">📉 Regressão Linear</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <div style="font-size:10px;color:#666">Eixo X:</div>
+        <select id="res-reg-x" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #ccc;font-family:system-ui" onchange="resDrawReg()"></select>
+        <div style="font-size:10px;color:#666">Eixo Y:</div>
+        <select id="res-reg-y" style="font-size:11px;padding:4px 8px;border-radius:8px;border:1px solid #ccc;font-family:system-ui" onchange="resDrawReg()"></select>
+      </div>
+      <svg id="res-chart-reg" viewBox="0 0 340 200" style="display:block;width:100%"></svg>
+      <div id="res-reg-eq" style="margin-top:8px;padding:8px 10px;background:#F0F9FF;border-radius:8px;font-size:11px;color:#0369A1;font-weight:700"></div>
+    </div>
+
+  </div><!-- /res-controls -->
+</div>
+
+<!-- ARTIGOS -->
+<div class="pnl" id="p-art">
+  <div class="ahero">
+    <div class="ahsub">Projeto de Doutorado · 4 Artigos Científicos</div>
+    <div class="ahtitle" id="art-proj-titulo">Chamas no Paraíso</div>
+    <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:6px">Daiana Ferreira Dias · PPGCA · UNEMAT · Cáceres-MT</div>
+  </div>
+  <div id="art-cards"></div>
+  <div style="padding:0 0 12px">
+    <button class="savebtn" onclick="salvarArt()"><span id="art-ico">💾</span> Salvar Artigos no Firebase</button>
+    <div id="art-msg" style="text-align:center;font-size:10.5px;color:#aaa;margin-top:6px"></div>
+  </div>
+</div>
+
+<!-- PROJETO -->
+<div class="pnl" id="p-proj">
+  <div class="sec"><div class="sec-h" onclick="tS('si')"><div class="sec-t">🎓 Identificação</div><span id="a-si">▼</span></div><div class="sec-b" id="si"><div class="fl">Título</div><textarea class="ff" id="pj-titulo" style="min-height:68px"></textarea><div class="fl">Candidata</div><input class="ff" id="pj-cand"><div class="fl">Orientador</div><input class="ff" id="pj-ori"><div class="fl">Programa</div><input class="ff" id="pj-prog"><div class="fl">Área de Estudo</div><input class="ff" id="pj-area"></div></div>
+  <div class="sec"><div class="sec-h" onclick="tS('sp')"><div class="sec-t">🔥 Problema e Justificativa</div><span id="a-sp">▼</span></div><div class="sec-b" id="sp"><div class="fl">Problema Central</div><textarea class="ff" id="pj-prob" style="min-height:100px"></textarea><div class="fl">Justificativa</div><textarea class="ff" id="pj-just" style="min-height:110px"></textarea><div class="fl">Pergunta Científica</div><textarea class="ff" id="pj-perg" style="min-height:70px"></textarea></div></div>
+  <div class="sec"><div class="sec-h" onclick="tS('so')"><div class="sec-t">🎯 Objetivos</div><span id="a-so">▼</span></div><div class="sec-b" id="so"><div class="fl">Objetivo Geral</div><textarea class="ff" id="pj-objg" style="min-height:90px"></textarea><div class="fl">Objetivos Específicos (O1–O4)</div><textarea class="ff" id="pj-obje" style="min-height:150px"></textarea></div></div>
+  <div class="sec"><div class="sec-h" onclick="tS('sm')"><div class="sec-t">🔬 Metodologia</div><span id="a-sm">▼</span></div><div class="sec-b" id="sm"><div class="fl">Delineamento</div><textarea class="ff" id="pj-delin" style="min-height:90px"></textarea><div class="fl">Campo</div><textarea class="ff" id="pj-camp" style="min-height:80px"></textarea><div class="fl">Laboratório</div><textarea class="ff" id="pj-lab" style="min-height:80px"></textarea><div class="fl">Estatística</div><textarea class="ff" id="pj-estat" style="min-height:70px"></textarea></div></div>
+  <div class="sec"><div class="sec-h" onclick="tS('sh')"><div class="sec-t">💡 Hipóteses e Resultados</div><span id="a-sh">▼</span></div><div class="sec-b" id="sh"><div class="fl">Hipóteses (H1–H4)</div><textarea class="ff" id="pj-hip" style="min-height:110px"></textarea><div class="fl">Resultados Esperados</div><textarea class="ff" id="pj-res" style="min-height:110px"></textarea><div class="fl">Impacto</div><textarea class="ff" id="pj-imp" style="min-height:80px"></textarea></div></div>
+  <div style="margin-top:4px;margin-bottom:16px">
+    <button class="savebtn" id="psave" onclick="salvar()"><span id="pico">💾</span> Salvar no Firebase</button>
+    <div id="pmsg"></div>
+  </div>
+</div>
+
+<!-- NOTAS -->
+<div class="pnl" id="p-notas">
+  <div class="trow" id="trow"></div>
+  <textarea class="ninp" id="ninp" placeholder="Observação de campo, ideia, dúvida..."></textarea>
+  <button class="nadd" onclick="addN()">+ Salvar nota no Firebase</button>
+  <div class="nlist" id="nlist"><div class="nemp" id="nemp">Nenhuma nota ainda.</div></div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// PERFIL DE SOLO — CIENTIFICAMENTE CORRETO
+// Pantanal: O/A orgânico → B/C mineral → TURFA PROFUNDA paleoclimática (>120cm)
+// Índice 0 = TOPO (superfície) → índice N = FUNDO (mais profundo)
+// ══════════════════════════════════
+const LY = [
+  // ── HORIZONTE ORGÂNICO SUPERFICIAL ──
+  {cm:"0–10",   n:"Horizonte O",  c:"#1A0800", mo:"62%", u:"13%", f:"CRÍTICO",    p:"Mat. org. bruta / turfa fresca", t:"375°C"},
+  {cm:"10–25",  n:"Horizonte A",  c:"#3C1E0A", mo:"38%", u:"20%", f:"MUITO ALTO", p:"Húmus + raízes",                 t:"320°C"},
+  // ── HORIZONTE B MINERAL ──
+  {cm:"25–45",  n:"Horizonte AB", c:"#6B4828", mo:"18%", u:"30%", f:"MODERADO",   p:"Transição org-mineral",          t:"240°C"},
+  {cm:"45–70",  n:"Horizonte B1", c:"#A07848", mo:"7%",  u:"44%", f:"BAIXO",      p:"Solo mineral com MO",            t:"150°C"},
+  {cm:"70–95",  n:"Horizonte B2", c:"#C09860", mo:"3%",  u:"54%", f:"MUITO BAIXO",p:"Solo mineral",                   t:"88°C"},
+  // ── HORIZONTE C MINERAL (sedimento parental) ──
+  {cm:"95–120", n:"Horizonte C",  c:"#D8BA80", mo:"1%",  u:"60%", f:"RESIDUAL",   p:"Sedimento mineral / aluvião",    t:"38°C"},
+  // ── CONTATO / TRANSIÇÃO ──
+  {cm:"120–135",n:"Contato",      c:"#906030", mo:"5%",  u:"66%", f:"MUITO BAIXO",p:"Interface sed. / turfa fóssil",  t:"95°C"},
+  // ── TURFEIRAS PROFUNDAS — acúmulo paleoclimático (>120cm) ──
+  {cm:"135–160",n:"Turfa I",      c:"#4A1E06", mo:"55%", u:"72%", f:"ALTO",       p:"Turfa sáprica profunda",         t:"295°C"},
+  {cm:"160–185",n:"Turfa II",     c:"#321205", mo:"68%", u:"74%", f:"ALTO",       p:"Turfa hêmica fóssil",            t:"335°C"},
+  {cm:"185–210",n:"Turfa III",    c:"#200A02", mo:"78%", u:"75%", f:"CRÍTICO",    p:"Turfa fibrosa fóssil",           t:"372°C"},
+  {cm:"210–230",n:"Turfa basal",  c:"#100400", mo:"85%", u:"76%", f:"CRÍTICO",    p:"Turfa compacta basal",           t:"395°C"},
+];
+
+// Espessuras visuais proporcionais (px) — total deve ser a altura do bloco
+// Camadas finas no topo, mais grossas na turfa profunda
+const HEIGHTS = [22, 28, 30, 36, 36, 38, 20, 36, 36, 36, 28]; // total ~346px
+const TOTAL_H = HEIGHTS.reduce((a,b)=>a+b,0);
+const BOX_W = 180;
+const BOX_DEPTH = 90; // profundidade do bloco (face lateral)
+
+const FC={"CRÍTICO":"#DC2626","MUITO ALTO":"#EA580C","ALTO":"#D97706","MODERADO":"#CA8A04","BAIXO":"#65A30D","MUITO BAIXO":"#16A34A","RESIDUAL":"#0284C7"};
+const NS="http://www.w3.org/2000/svg";
+const se=(t,a,p)=>{const e=document.createElementNS(NS,t);a&&Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));p&&p.appendChild(e);return e;};
+const st=(tx,a,p)=>{const e=se("text",a,p);e.textContent=tx;return e;};
+
+// ══ TABS ══
+let cur="trench";
+function G(t){
+  document.querySelectorAll(".tab").forEach((b,i)=>b.classList.toggle("on",["trench","core","fatias","bbq","field","inst","meso","res","art","proj","notas"][i]===t));
+  document.querySelectorAll(".pnl").forEach(p=>p.classList.remove("on"));
+  document.getElementById("p-"+t).classList.add("on");
+  cur=t;
+  if(t==="field") startF();
+  if(t==="core") setTimeout(initCore,50);
+  if(t==="fatias") renderFatias();
+  if(t==="inst") setTimeout(initInst,50);
+  if(t==="meso") initMeso();
+  if(t==="res") initRes();
+}
+
+// ══ TRINCHEIRA 3D ══
+// Abordagem: box CSS 3D com 6 faces.
+// FACE FRONTAL (#t3front): flex-direction:column, i=0 no TOPO do div = TOPO VISUAL ✓
+// FACE TOPO (#t3top): chão verde — posicionado como tampa superior do box
+// O segredo: NÃO usar transform no topo que depende de rotação do box.
+// Em vez disso: topo e fundo são posicionados com translateY e rotateX fixos.
+
+let selT=null;
+
+function buildBox(){
+  const box=document.getElementById("t3box");
+  box.innerHTML="";
+  box.style.height=TOTAL_H+"px";
+
+  // ── CHÃO (topo do box) ──
+  const top=document.createElement("div");
+  top.style.cssText=`
+    position:absolute;left:0;top:0;
+    width:${BOX_W}px;height:${BOX_DEPTH}px;
+    transform:rotateX(90deg) translateZ(0px);
+    transform-origin:top center;
+    background:linear-gradient(135deg,#3A6020,#5A8A35);
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;color:rgba(255,255,255,0.85);
+    letter-spacing:.07em;border:2px solid #2A4A18;
+  `;
+  top.textContent="🌿 CHÃO · SUPERFÍCIE";
+  box.appendChild(top);
+
+  // ── FUNDO do box (turfa basal) ──
+  const bot=document.createElement("div");
+  bot.style.cssText=`
+    position:absolute;left:0;bottom:0;
+    width:${BOX_W}px;height:${BOX_DEPTH}px;
+    transform:rotateX(-90deg) translateZ(0px);
+    transform-origin:bottom center;
+    background:${LY[LY.length-1].c};
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;color:rgba(255,255,255,0.5);font-weight:600;
+  `;
+  bot.textContent="Turfa basal ~230cm";
+  box.appendChild(bot);
+
+  // ── FACE FRONTAL (z = +BOX_DEPTH/2) ──
+  const front=document.createElement("div");
+  front.style.cssText=`
+    position:absolute;left:0;top:0;
+    width:${BOX_W}px;height:${TOTAL_H}px;
+    transform:translateZ(${BOX_DEPTH/2}px);
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  `;
+  // i=0 → primeiro filho → TOPO do flex → TOPO visual ✓
+  LY.forEach((l,i)=>{
+    const d=document.createElement("div");
+    const h=HEIGHTS[i];
+    const isSel=selT===i;
+    d.style.cssText=`
+      height:${h}px;min-height:${h}px;
+      background:${l.c};width:100%;
+      cursor:pointer;flex-shrink:0;
+      display:flex;align-items:center;
+      border-bottom:1px solid rgba(0,0,0,0.2);
+      ${isSel?"outline:3px solid #F97316;outline-offset:-2px;filter:brightness(1.35)":""}
+    `;
+    const span=document.createElement("span");
+    span.style.cssText="font-size:7px;font-weight:700;color:rgba(255,255,255,0.8);padding-left:6px;pointer-events:none;white-space:nowrap;overflow:hidden;";
+    span.textContent=l.n;
+    d.appendChild(span);
+    d.addEventListener("click",()=>selLayer(i));
+    front.appendChild(d);
+  });
+  box.appendChild(front);
+
+  // ── FACE TRASEIRA ──
+  const back=document.createElement("div");
+  back.style.cssText=`
+    position:absolute;left:0;top:0;
+    width:${BOX_W}px;height:${TOTAL_H}px;
+    transform:rotateY(180deg) translateZ(${BOX_DEPTH/2}px);
+    display:flex;flex-direction:column;overflow:hidden;
+  `;
+  LY.forEach((l,i)=>{
+    const d=document.createElement("div");
+    d.style.cssText=`height:${HEIGHTS[i]}px;min-height:${HEIGHTS[i]}px;background:${l.c};width:100%;flex-shrink:0;filter:brightness(0.6);border-bottom:1px solid rgba(0,0,0,0.2)`;
+    back.appendChild(d);
+  });
+  box.appendChild(back);
+
+  // ── FACE DIREITA (x = +BOX_W/2) ──
+  const right=document.createElement("div");
+  right.style.cssText=`
+    position:absolute;top:0;left:${BOX_W/2}px;
+    width:${BOX_DEPTH}px;height:${TOTAL_H}px;
+    transform:rotateY(90deg);transform-origin:left center;
+    display:flex;flex-direction:column;overflow:hidden;
+  `;
+  LY.forEach((l,i)=>{
+    const d=document.createElement("div");
+    d.style.cssText=`height:${HEIGHTS[i]}px;min-height:${HEIGHTS[i]}px;background:${l.c};width:100%;flex-shrink:0;filter:brightness(0.72);border-bottom:1px solid rgba(0,0,0,0.15)`;
+    right.appendChild(d);
+  });
+  box.appendChild(right);
+
+  // ── FACE ESQUERDA ──
+  const left=document.createElement("div");
+  left.style.cssText=`
+    position:absolute;top:0;left:${-BOX_W/2}px;
+    width:${BOX_DEPTH}px;height:${TOTAL_H}px;
+    transform:rotateY(-90deg);transform-origin:right center;
+    display:flex;flex-direction:column;overflow:hidden;
+  `;
+  LY.forEach((l,i)=>{
+    const d=document.createElement("div");
+    d.style.cssText=`height:${HEIGHTS[i]}px;min-height:${HEIGHTS[i]}px;background:${l.c};width:100%;flex-shrink:0;filter:brightness(0.65);border-bottom:1px solid rgba(0,0,0,0.15)`;
+    left.appendChild(d);
+  });
+  box.appendChild(left);
+}
+
+function selLayer(i){
+  selT=selT===i?null:i;
+  buildBox();
+  // update swatches
+  document.querySelectorAll("#sw-t .swb").forEach((b,j)=>b.classList.toggle("on",j===i));
+  // show card
+  const card=document.getElementById("lc-t");
+  if(selT===null){card.style.display="none";return;}
+  const l=LY[selT]; card.style.display="block";
+  document.getElementById("lch-t").style.background=l.c;
+  document.getElementById("ln-t").textContent=l.n;
+  document.getElementById("ld-t").textContent=l.cm+" cm";
+  document.getElementById("mo-t").textContent=l.mo;
+  document.getElementById("um-t").textContent=l.u;
+  document.getElementById("fi-t").textContent=l.f; document.getElementById("fi-t").style.color=FC[l.f];
+  document.getElementById("pt-t").textContent=l.p;
+  document.getElementById("ti-t").textContent=l.t;
+}
+
+// ── Rotação por toque/mouse ──
+(function(){
+  let rx=30,ry=-30,dragging=false,lx=0,ly=0;
+  function upd(){document.getElementById("t3box").style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;}
+  const scene=document.getElementById("t3scene");
+  scene.addEventListener("mousedown",e=>{dragging=true;lx=e.clientX;ly=e.clientY;e.preventDefault();});
+  window.addEventListener("mousemove",e=>{if(!dragging)return;ry+=(e.clientX-lx)*0.55;rx-=(e.clientY-ly)*0.55;rx=Math.max(-70,Math.min(85,rx));lx=e.clientX;ly=e.clientY;upd();});
+  window.addEventListener("mouseup",()=>dragging=false);
+  scene.addEventListener("touchstart",e=>{dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;e.preventDefault();},{passive:false});
+  window.addEventListener("touchmove",e=>{if(!dragging)return;ry+=(e.touches[0].clientX-lx)*0.55;rx-=(e.touches[0].clientY-ly)*0.55;rx=Math.max(-70,Math.min(85,rx));lx=e.touches[0].clientX;ly=e.touches[0].clientY;upd();},{passive:false});
+  window.addEventListener("touchend",()=>dragging=false);
+})();
+
+// ══ CORE — Three.js tubo acrílico com fatias ejetáveis ══
+let sC=null;
+let coreScene=null;
+
+function initCore(){
+  if(coreScene) return;
+  const wrap=document.getElementById("core-canvas-wrap");
+  if(!wrap||wrap.offsetWidth===0) return;
+
+  const THREE=window.THREE;
+  const W=wrap.clientWidth, H=420;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(W,H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0xFAFAF8,1);
+  wrap.appendChild(renderer.domElement);
+
+  const scene=new THREE.Scene();
+  coreScene=scene;
+  const camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.set(0,0,7);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const dLight=new THREE.DirectionalLight(0xffffff,0.8);
+  dLight.position.set(3,5,5); scene.add(dLight);
+  const dLight2=new THREE.DirectionalLight(0xffffff,0.3);
+  dLight2.position.set(-3,-2,-3); scene.add(dLight2);
+
+  const ranges=[[0,10,0],[10,25,1],[25,45,2],[45,70,3],[70,95,4],[95,120,5],[120,135,6],[135,160,7],[160,185,8],[185,210,9],[210,230,10]];
+  function getLYIdx(cm){const r=ranges.find(([a,b])=>cm>=a&&cm<b);return r?r[2]:10;}
+
+  const R=0.38, sliceH=0.09, totalH=46*sliceH, yTop=totalH/2;
+  const sliceMeshes=[];
+  const ejected={};
+  const ejAnim={};
+
+  // Grupo que contém tudo — permite rotação sem quebrar o raycasting
+  const grp=new THREE.Group();
+  scene.add(grp);
+
+  // Criar fatias
+  for(let si=0;si<46;si++){
+    const cm=si*5;
+    const lyIdx=getLYIdx(cm);
+    const l=LY[lyIdx];
+    const col=new THREE.Color(parseInt(l.c.replace('#',''),16));
+    const sliceGeo=new THREE.CylinderGeometry(R,R,sliceH-0.004,32,1);
+    const sliceMat=new THREE.MeshPhongMaterial({color:col,shininess:40,specular:new THREE.Color(0x333333)});
+    const sliceMesh=new THREE.Mesh(sliceGeo,sliceMat);
+    sliceMesh.position.set(0, yTop-si*sliceH-sliceH/2, 0);
+    sliceMesh.userData={sliceIdx:si,lyIdx,cm};
+    grp.add(sliceMesh);
+    sliceMeshes.push(sliceMesh);
+
+    // Anel separador
+    const ringGeo=new THREE.TorusGeometry(R,0.006,8,32);
+    const ringMat=new THREE.MeshBasicMaterial({
+      color:cm%25===0&&cm>0?0xFFFFFF:0xCCCCCC,
+      transparent:true, opacity:cm%25===0&&cm>0?0.9:0.5
+    });
+    const ringMesh=new THREE.Mesh(ringGeo,ringMat);
+    ringMesh.position.set(0, yTop-si*sliceH, 0);
+    ringMesh.rotation.x=Math.PI/2;
+    grp.add(ringMesh);
+
+    // Marcador turfa (135cm = slice 27)
+    if(cm===135){
+      const aGeo=new THREE.TorusGeometry(R+0.025,0.014,8,32);
+      const aMesh=new THREE.Mesh(aGeo,new THREE.MeshBasicMaterial({color:0xD97706}));
+      aMesh.position.set(0,yTop-si*sliceH,0);
+      aMesh.rotation.x=Math.PI/2;
+      grp.add(aMesh);
+    }
+  }
+
+  // Tubo acrílico
+  const tubeGeo=new THREE.CylinderGeometry(R+0.045,R+0.045,totalH+0.1,32,1,true);
+  const tubeMat=new THREE.MeshPhongMaterial({color:0xAADDFF,transparent:true,opacity:0.18,side:THREE.DoubleSide,shininess:120,specular:new THREE.Color(0x8888FF)});
+  grp.add(new THREE.Mesh(tubeGeo,tubeMat));
+
+  // Tampas
+  [[yTop+0.05],[-(yTop+0.05)]].forEach(([y])=>{
+    const capGeo=new THREE.CylinderGeometry(R+0.045,R+0.045,0.04,32);
+    const capMesh=new THREE.Mesh(capGeo,new THREE.MeshPhongMaterial({color:0x88CCFF,transparent:true,opacity:0.5,shininess:150}));
+    capMesh.position.y=y; grp.add(capMesh);
+  });
+
+  // Labels de profundidade
+  function makeLabel(text){
+    const cv=document.createElement("canvas"); cv.width=128; cv.height=32;
+    const ctx=cv.getContext("2d");
+    ctx.clearRect(0,0,128,32);
+    ctx.fillStyle="#555"; ctx.font="bold 14px system-ui"; ctx.textAlign="left";
+    ctx.fillText(text,4,22);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));
+    sp.scale.set(1.2,0.3,1);
+    return sp;
+  }
+  [0,50,100,135,150,200,230].forEach(cm=>{
+    const sp=makeLabel(cm+"cm");
+    sp.position.set(-(R+0.55), yTop-cm/5*sliceH, 0);
+    grp.add(sp);
+  });
+
+  // Rotação
+  let rotX=-0.2, rotY=0, isDragging=false, dragX=0, dragY=0;
+  grp.rotation.x=rotX; grp.rotation.y=rotY;
+
+  const canvas=renderer.domElement;
+  canvas.style.touchAction="none";
+
+  function onDragStart(x,y){isDragging=true; dragX=x; dragY=y;}
+  function onDragMove(x,y){
+    if(!isDragging) return;
+    rotY+=(x-dragX)*0.012; rotX+=(y-dragY)*0.010;
+    rotX=Math.max(-1.5,Math.min(1.5,rotX));
+    grp.rotation.y=rotY; grp.rotation.x=rotX;
+    dragX=x; dragY=y;
+  }
+  function onDragEnd(){isDragging=false;}
+
+  canvas.addEventListener("mousedown",e=>{onDragStart(e.clientX,e.clientY);e.preventDefault();});
+  window.addEventListener("mousemove",e=>{if(isDragging)onDragMove(e.clientX,e.clientY);});
+  window.addEventListener("mouseup",onDragEnd);
+  canvas.addEventListener("touchstart",e=>{onDragStart(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
+  window.addEventListener("touchmove",e=>{if(isDragging)onDragMove(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  window.addEventListener("touchend",onDragEnd);
+
+  // Raycasting + Ejeção
+  const raycaster=new THREE.Raycaster();
+  const mouse2d=new THREE.Vector2();
+  let tapX=0, tapY=0;
+
+  function doTap(ex,ey){
+    const rect=canvas.getBoundingClientRect();
+    mouse2d.x=((ex-rect.left)/rect.width)*2-1;
+    mouse2d.y=-((ey-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse2d,camera);
+    const hits=raycaster.intersectObjects(sliceMeshes,false);
+    if(!hits.length) return;
+    const hit=hits[0].object;
+    const si=hit.userData.sliceIdx;
+    const li=hit.userData.lyIdx;
+    if(ejected[si]){
+      ejected[si]=false; ejAnim[si]=0;
+    } else {
+      ejected[si]=true; ejAnim[si]=1.5;
+    }
+    pkC(li);
+  }
+
+  canvas.addEventListener("mousedown",e=>{tapX=e.clientX; tapY=e.clientY;});
+  canvas.addEventListener("mouseup",e=>{
+    if(Math.abs(e.clientX-tapX)<8&&Math.abs(e.clientY-tapY)<8) doTap(e.clientX,e.clientY);
+  });
+  canvas.addEventListener("touchstart",e=>{tapX=e.touches[0].clientX; tapY=e.touches[0].clientY;},{passive:true});
+  canvas.addEventListener("touchend",e=>{
+    const t=e.changedTouches[0];
+    if(Math.abs(t.clientX-tapX)<12&&Math.abs(t.clientY-tapY)<12) doTap(t.clientX,t.clientY);
+  },{passive:true});
+
+  // Loop de animação
+  function coreAnimate(){
+    requestAnimationFrame(coreAnimate);
+    sliceMeshes.forEach((m,si)=>{
+      if(ejAnim[si]!==undefined){
+        const diff=ejAnim[si]-m.position.x;
+        m.position.x+=diff*0.12;
+        if(Math.abs(diff)<0.004) delete ejAnim[si];
+      }
+    });
+    renderer.render(scene,camera);
+  }
+  coreAnimate();
+}
+
+function pkC(lyIdx){
+  sC=lyIdx;
+  uSw("c",lyIdx);
+  showCC(lyIdx);
+}
+function showCC(i){
+  if(i===null||i===undefined){document.getElementById("lc-c").style.display="none";return;}
+  const l=LY[i];
+  document.getElementById("lc-c").style.display="block";
+  document.getElementById("lch-c").style.background=l.c;
+  document.getElementById("ln-c").textContent=l.n;
+  document.getElementById("ld-c").textContent=l.cm+" cm";
+  if(document.getElementById("ld2-c")) document.getElementById("ld2-c").textContent=l.cm+" cm";
+  document.getElementById("mo-c").textContent=l.mo;
+  document.getElementById("fi-c").textContent=l.f;
+  document.getElementById("fi-c").style.color=FC[l.f];
+  document.getElementById("pt-c").textContent=l.p;
+  document.getElementById("ti-c").textContent=l.t;
+}
+// ══ INSTRUMENTOS 3D ══
+let instDone=false;
+
+// Dados dos equipamentos
+const EQUIP=[
+  {id:"tdr",    name:"TDR-300 · Umidade",        tag:"Time Domain Reflectometry", color:"#0369A1",
+   info:"Sensor TDR-300. Mede umidade volumétrica (θv) a 10, 25, 45 e 65 cm de profundidade em cada trincheira. Faixa 0–100%. Precisão ±2%. Saída RS-485 para HOBOlink RX2100. Dados enviados a cada 15 min via Wi-Fi → Starlink → Firebase."},
+  {id:"pt100",  name:"Pt100 · Temperatura",       tag:"Sonda de Platina 4 fios",   color:"#DC2626",
+   info:"Sonda Pt100 de platina (4 fios). Temperatura do solo a 8, 22, 42 e 62 cm. Faixa −40 a +80°C. Precisão ±0.1°C. Resolução 0.01°C. Conectado ao HOBOlink RX2100 de cada trincheira."},
+  {id:"splite", name:"SP-Lite2 · Radiação",       tag:"Kipp & Zonen",              color:"#D97706",
+   info:"Piranômetro Kipp & Zonen SP-Lite2. Mede radiação solar global (W/m²) no microclima de cada trincheira. Espectro 400–1100 nm. Saída 4-20 mA. Instalado na borda da trincheira, horizontal."},
+  {id:"5te",    name:"5TE · EC e pH",             tag:"Decagon 5TE",               color:"#7C3AED",
+   info:"Sensor Decagon 5TE. Mede condutividade elétrica (CE, dS/m), temperatura e umidade volumétrica a 15 e 40 cm. CE correlaciona com decomposição da turfa e pH estimado. Saída SDI-12."},
+  {id:"gee",    name:"Câmara de Fluxo GEE",       tag:"PVC Estática Opaca",        color:"#166534",
+   info:"Câmara estática opaca em PVC branco (Ø34 cm, h=20 cm). Coleta de CO₂ e CH₄ por seringa a cada hora. Análise por cromatografia gasosa GC-FID (CH₄) e GC-TCD (CO₂). 9 câmaras totais — 3 por trincheira."},
+  {id:"hobo",   name:"HOBOlink RX2100",           tag:"Datalogger Wi-Fi",          color:"#1C1410",
+   info:"Datalogger HOBOlink RX2100 na borda de cada trincheira. Coleta TDR-300, Pt100, 5TE e SP-Lite2 a cada 15 min. Armazenamento 128 MB. Transmissão Wi-Fi para roteador mesh TP-Link EAP225. Bateria 12V/7Ah com recarga solar."},
+  {id:"meteo",  name:"Estação Meteorológica",     tag:"HOBOlink Central",          color:"#0C4A6E",
+   info:"Estação central com: WindSonic 2D (vento), RHT Onset (T° e UR), SP-Lite2 (radiação), RG-M (chuva). Coleta a cada 5 min. Transmissão via HOBOlink central para Firebase. Referência microclimática para toda a área de estudo."},
+  {id:"anem",   name:"WindSonic 2D · Anemômetro", tag:"Gill WindSonic",            color:"#334155",
+   info:"Gill WindSonic 2D ultrassônico. Velocidade 0–65 m/s, direção 0–359°. Sem partes móveis. Saída RS-485. Montado no mastro a 3 m de altura. Dados a cada 5 min para HOBOlink central."},
+  {id:"solar",  name:"Painel Solar",              tag:"30W Monocristalino 12V",    color:"#1A3A6A",
+   info:"Painel monocristalino 30W/12V. Carrega banco de baterias 12V/20Ah. Autonomia mínima 7 dias sem sol. Alimenta os 3 HOBOlink RX2100, roteador TP-Link EAP225 e terminal Starlink Gen 3."},
+  {id:"wifi",   name:"Roteador Wi-Fi Mesh",       tag:"TP-Link EAP225 Outdoor",    color:"#374151",
+   info:"TP-Link EAP225 Outdoor Wi-Fi 5 Mesh. Alcance ≥300 m ao ar livre. Conecta os 3 HOBOlink → Starlink. Protocolo MQTT para alertas em tempo real para brigadistas e chefia da ESEC Taiama. IP65, −30 a +70°C."},
+  {id:"star",   name:"Starlink Gen 3",            tag:"Flat HP · 100–250 Mbps",   color:"#1E293B",
+   info:"Terminal Starlink Gen 3 High Performance. Download 100–250 Mbps. Latência 20–40 ms. Envia dados ao Firebase em tempo real. Publica alertas de temperatura crítica de ignição e status dos sensores para brigadistas e chefia da ESEC Taiama via MQTT e dashboard público."},
+  {id:"pub",    name:"Firebase + Público",        tag:"Dashboard em Tempo Real",  color:"#0369A1",
+   info:"Dados publicados no Firebase Realtime Database (profagua-unemat). Acesso público via dashboard web. Brigadistas recebem alertas por app. Chefia da ESEC Taiama monitora remotamente. Cientistas acessam série histórica completa. Dados abertos para pesquisa."},
+];
+
+function initInst(){
+  if(instDone) return;
+  instDone=true;
+
+  const wrap=document.getElementById("inst-svg-wrap");
+  if(!wrap) return;
+
+  const VW=Math.min(wrap.clientWidth,390);
+  const VH=560;
+
+  // ── Posições dos elementos na cena 2D (perspectiva simulada) ──
+  // 3 trincheiras em triângulo no centro-baixo
+  // Estação meteorológica ao centro-topo
+  // Equipamentos externos à direita
+
+  const NS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox","0 0 390 560");
+  svg.setAttribute("width","100%");
+  svg.style.display="block";
+  wrap.appendChild(svg);
+
+  // fundo (céu + solo)
+  const sky=document.createElementNS(NS,"rect");
+  sky.setAttribute("x","0");sky.setAttribute("y","0");sky.setAttribute("width","390");sky.setAttribute("height","260");
+  sky.setAttribute("fill","#B8D9F0"); svg.appendChild(sky);
+  // Gradiente céu
+  const defs=document.createElementNS(NS,"defs");
+  const skyGrad=document.createElementNS(NS,"linearGradient");
+  skyGrad.setAttribute("id","skyGrad");skyGrad.setAttribute("x1","0");skyGrad.setAttribute("y1","0");skyGrad.setAttribute("x2","0");skyGrad.setAttribute("y2","1");
+  const s1=document.createElementNS(NS,"stop");s1.setAttribute("offset","0%");s1.setAttribute("stop-color","#87CEEB");
+  const s2=document.createElementNS(NS,"stop");s2.setAttribute("offset","100%");s2.setAttribute("stop-color","#C8E8F8");
+  skyGrad.appendChild(s1);skyGrad.appendChild(s2);defs.appendChild(skyGrad);
+  svg.insertBefore(defs,sky);
+  sky.setAttribute("fill","url(#skyGrad)");
+
+  // Chão
+  const ground=document.createElementNS(NS,"rect");
+  ground.setAttribute("x","0");ground.setAttribute("y","240");ground.setAttribute("width","390");ground.setAttribute("height","320");
+  ground.setAttribute("fill","#5A8035"); svg.appendChild(ground);
+  // Linha do horizonte
+  const horiz=document.createElementNS(NS,"line");
+  horiz.setAttribute("x1","0");horiz.setAttribute("y1","240");horiz.setAttribute("x2","390");horiz.setAttribute("y2","240");
+  horiz.setAttribute("stroke","#3A6020");horiz.setAttribute("stroke-width","2"); svg.appendChild(horiz);
+
+  // Sol
+  const solc=document.createElementNS(NS,"circle");
+  solc.setAttribute("cx","340");solc.setAttribute("cy","55");solc.setAttribute("r","22");
+  solc.setAttribute("fill","#FCD34D");solc.setAttribute("opacity","0.9"); svg.appendChild(solc);
+  // raios do sol
+  for(let si=0;si<8;si++){
+    const ang=si*Math.PI/4;
+    const sl=document.createElementNS(NS,"line");
+    sl.setAttribute("x1",340+28*Math.cos(ang));sl.setAttribute("y1",55+28*Math.sin(ang));
+    sl.setAttribute("x2",340+36*Math.cos(ang));sl.setAttribute("y2",55+36*Math.sin(ang));
+    sl.setAttribute("stroke","#FCD34D");sl.setAttribute("stroke-width","2.5");sl.setAttribute("stroke-linecap","round");
+    svg.appendChild(sl);
+  }
+
+  function mkEl(tag,attrs,parent=svg){
+    const e=document.createElementNS(NS,tag);
+    Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+    parent.appendChild(e); return e;
+  }
+  function txt(t,attrs,parent=svg){const e=mkEl("text",attrs,parent);e.textContent=t;return e;}
+  function grp(attrs={},parent=svg){return mkEl("g",attrs,parent);}
+
+  // ── FUNÇÃO: desenhar trincheira ──
+  function drawTrench(cx, cy, label, equipIds){
+    const W=72, H=95, depth=H;
+    const g=grp({"cursor":"pointer"});
+
+    // Solo ao redor (plataforma)
+    mkEl("rect",{x:cx-W/2-14,y:cy-8,width:W+28,height:16,fill:"#5A8035",rx:"3"},g);
+
+    // Borda de madeira
+    mkEl("rect",{x:cx-W/2-4,y:cy-6,width:W+8,height:8,fill:"#5C3A1E",rx:"2"},g);
+    // Corte do buraco
+    mkEl("rect",{x:cx-W/2,y:cy,width:W,height:H,fill:"#1A0800"},g);
+
+    // Camadas de solo nas paredes
+    const layers=[
+      {y:0,  h:10,c:"#1A0800"},
+      {y:10, h:14,c:"#3C1E0A"},
+      {y:24, h:18,c:"#6B4828"},
+      {y:42, h:22,c:"#A07848"},
+      {y:64, h:18,c:"#C09860"},
+      {y:82, h:13,c:"#4A1E06"},
+    ];
+    // Paredes visíveis (frente e lados)
+    layers.forEach(({y,h,c})=>{
+      // parede esquerda (perspectiva)
+      mkEl("rect",{x:cx-W/2,y:cy+y,width:6,height:h,fill:c,style:"filter:brightness(0.7)"},g);
+      // parede direita
+      mkEl("rect",{x:cx+W/2-6,y:cy+y,width:6,height:h,fill:c,style:"filter:brightness(0.65)"},g);
+    });
+
+    // Fundo do buraco
+    mkEl("rect",{x:cx-W/2,y:cy+H-8,width:W,height:8,fill:"#100400"},g);
+
+    // Sensores dentro do buraco (pequenos cilindros coloridos)
+    const sensorColors={tdr:"#0369A1",pt100:"#DC2626","5te":"#7C3AED",gee:"#166534"};
+    const sensorX=[cx-24, cx-8, cx+8, cx+22];
+    const sensorDepths=[18,30,50,70];
+    equipIds.forEach((sid,si)=>{
+      const sc=sensorColors[sid]||"#888";
+      const sx=sensorX[si]||cx;
+      const sdep=sensorDepths[si]||20;
+      // cabo
+      mkEl("line",{x1:sx,y1:cy+4,x2:sx,y2:cy+sdep+10,stroke:"#111","stroke-width":"1.5"},g);
+      // corpo do sensor
+      mkEl("rect",{x:sx-4,y:cy+sdep,width:8,height:12,rx:"3",fill:sc},g);
+      // led piscante (círculo)
+      const led=mkEl("circle",{cx:sx+5,cy:cy+sdep+6,r:"2.5",fill:"#00FF88",opacity:"0.9"},g);
+      led.setAttribute("class","inst-led");
+    });
+
+    // Câmara de fluxo (cilindro acrílico na borda)
+    mkEl("rect",{x:cx+W/2+2,y:cy+2,width:14,height:22,rx:"7",fill:"rgba(180,220,255,0.5)","stroke":"#88BBFF","stroke-width":"1.5"},g);
+
+    // HOBOlink (caixa na borda esquerda)
+    const hobog=grp({"cursor":"pointer","data-id":"hobo"},g);
+    hobog.onclick=()=>showInstCard("hobo");
+    mkEl("rect",{x:cx-W/2-22,y:cy+2,width:18,height:13,rx:"2",fill:"#F0EDE8","stroke":"#ccc","stroke-width":"1"},hobog);
+    // tela verde
+    mkEl("rect",{x:cx-W/2-20,y:cy+4,width:14,height:9,rx:"1",fill:"#001830"},hobog);
+    mkEl("rect",{x:cx-W/2-19,y:cy+5,width:12,height:2,rx:"1",fill:"#00FF88",opacity:"0.9"},hobog);
+    mkEl("rect",{x:cx-W/2-19,y:cy+9,width:8,height:1.5,rx:"1",fill:"#88FFAA",opacity:"0.7"},hobog);
+
+    // Label da trincheira
+    txt(label,{x:cx,y:cy-14,"text-anchor":"middle","font-size":"11","font-weight":"800","fill":"#1C1410"},g);
+
+    // Click area para equipamentos
+    equipIds.forEach((sid,si)=>{
+      const sx=sensorX[si]||cx;
+      const sdep=sensorDepths[si]||20;
+      const ca=mkEl("rect",{x:sx-7,y:cy+sdep-2,width:14,height:16,rx:"3",fill:"transparent","cursor":"pointer"},g);
+      ca.onclick=(e)=>{e.stopPropagation();showInstCard(sid);};
+    });
+    const cham=mkEl("rect",{x:cx+W/2,y:cy,width:18,height:26,rx:"8",fill:"transparent","cursor":"pointer"},g);
+    cham.onclick=(e)=>{e.stopPropagation();showInstCard("gee");};
+
+    return g;
+  }
+
+  // ── 3 TRINCHEIRAS em triângulo ──
+  const t1=drawTrench(78,  320, "T1", ["tdr","pt100","5te","gee"]);
+  const t2=drawTrench(195, 310, "T2", ["tdr","pt100","5te","gee"]);
+  const t3=drawTrench(312, 320, "T3", ["tdr","pt100","5te","gee"]);
+
+  // Cabos do solo para roteador (linhas curvas)
+  function drawCable(x1,y1,x2,y2,color,dashed=false){
+    const mx=(x1+x2)/2, my=Math.min(y1,y2)-30;
+    const d=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    const path=mkEl("path",{d,"fill":"none","stroke":color,"stroke-width":"1.8","opacity":"0.75"});
+    if(dashed) path.setAttribute("stroke-dasharray","5,3");
+    // Partícula animada
+    const dot=mkEl("circle",{r:"3.5","fill":color,"opacity":"0.9"});
+    const anim=document.createElementNS(NS,"animateMotion");
+    anim.setAttribute("dur","2.5s");anim.setAttribute("repeatCount","indefinite");
+    const mpath=document.createElementNS(NS,"mpath");
+    // create path with ID
+    const pid="cp"+Math.random().toString(36).slice(2);
+    path.setAttribute("id",pid);
+    mpath.setAttributeNS("http://www.w3.org/1999/xlink","href","#"+pid);
+    anim.appendChild(mpath);
+    dot.appendChild(anim);
+    svg.appendChild(path);
+    svg.appendChild(dot);
+  }
+
+  // ── ESTAÇÃO METEOROLÓGICA ──
+  const mxc=195, myc=258;
+  // Mastro
+  mkEl("rect",{x:mxc-3,y:myc-90,width:6,height:90,fill:"#CCCCCC",rx:"3"});
+  // Base
+  mkEl("ellipse",{cx:mxc,cy:myc,rx:"18",ry:"6",fill:"#888888"});
+  // Anemômetro (topo)
+  const aneG=grp({"cursor":"pointer"});
+  aneG.onclick=()=>showInstCard("anem");
+  for(let ai=0;ai<3;ai++){
+    const ang=ai*2*Math.PI/3;
+    mkEl("line",{x1:mxc,y1:myc-90,x2:mxc+18*Math.cos(ang),y2:myc-90+8*Math.sin(ang),stroke:"#BBB","stroke-width":"1.5"},aneG);
+    mkEl("circle",{cx:mxc+18*Math.cos(ang),cy:myc-90+8*Math.sin(ang),r:"5",fill:"#EEE"},aneG);
+  }
+  // Termohigrômetro
+  const rhtG=grp({"cursor":"pointer"});rhtG.onclick=()=>showInstCard("meteo");
+  mkEl("rect",{x:mxc+8,y:myc-72,width:20,height:15,rx:"3",fill:"#F8F8F8","stroke":"#ccc","stroke-width":"1"},rhtG);
+  // Piranômetro
+  const piG=grp({"cursor":"pointer"});piG.onclick=()=>showInstCard("meteo");
+  mkEl("circle",{cx:mxc-14,cy:myc-55,r:"8",fill:"#111","stroke":"#4466FF","stroke-width":"1.5"},piG);
+  // Pluviógrafo
+  const plG=grp({"cursor":"pointer"});plG.onclick=()=>showInstCard("meteo");
+  mkEl("rect",{x:mxc-8,y:myc-40,width:16,height:20,rx:"5",fill:"#E8E8E8","stroke":"#aaa","stroke-width":"1"},plG);
+  svg.appendChild(aneG);svg.appendChild(rhtG);svg.appendChild(piG);svg.appendChild(plG);
+  txt("Estação Meteo",{x:mxc,y:myc-96,"text-anchor":"middle","font-size":"9","font-weight":"700","fill":"#0C4A6E"});
+
+  // ── EQUIPAMENTOS EXTERNOS (direita da cena) ──
+  // Painel Solar
+  const sg=grp({"cursor":"pointer"});sg.onclick=()=>showInstCard("solar");
+  mkEl("rect",{x:12,y:258,width:5,height:50,fill:"#888",rx:"2"},sg);
+  mkEl("rect",{x:3,y:248,width:28,height:19,rx:"2",fill:"#1A3A6A","stroke":"#3366FF","stroke-width":"1.2",transform:"rotate(-12,17,257)"},sg);
+  // linhas do painel
+  for(let gl=0;gl<3;gl++){mkEl("line",{x1:3,y1:252+gl*6,x2:31,y2:250+gl*6,stroke:"#0A2040","stroke-width":"0.8",transform:"rotate(-12,17,257)"},sg);}
+  txt("Painel 30W",{x:17,y:313,"text-anchor":"middle","font-size":"8","font-weight":"700","fill":"#1A3A6A"},sg);
+  svg.appendChild(sg);
+
+  // Wi-Fi Roteador
+  const wg=grp({"cursor":"pointer"});wg.onclick=()=>showInstCard("wifi");
+  mkEl("rect",{x:340,y:270,width:4,height:35,fill:"#888",rx:"2"},wg);
+  mkEl("rect",{x:333,y:262,width:18,height:11,rx:"2",fill:"#F0F0F0","stroke":"#ccc","stroke-width":"1"},wg);
+  mkEl("line",{x1:337,y1:261,x2:336,y2:254,stroke:"#333","stroke-width":"1.5"},wg);
+  mkEl("line",{x1:345,y1:261,x2:346,y2:254,stroke:"#333","stroke-width":"1.5"},wg);
+  txt("Wi-Fi Mesh",{x:342,y:312,"text-anchor":"middle","font-size":"8","font-weight":"700","fill":"#374151"},wg);
+  svg.appendChild(wg);
+
+  // Starlink
+  const stg=grp({"cursor":"pointer"});stg.onclick=()=>showInstCard("star");
+  mkEl("rect",{x:356,y:258,width:4,height:52,fill:"#555",rx:"2"},stg);
+  mkEl("ellipse",{cx:358,cy:252,rx:"15",ry:"5",fill:"#EAEAEA","stroke":"#AAA","stroke-width":"1.5"},stg);
+  mkEl("ellipse",{cx:358,cy:252,rx:"15",ry:"5",fill:"none","stroke":"#CCCCCC","stroke-width":"0.8"},stg);
+  txt("Starlink",{x:358,y:316,"text-anchor":"middle","font-size":"8","font-weight":"700","fill":"#1E293B"},stg);
+  svg.appendChild(stg);
+
+  // Nuvem Firebase/Público
+  const cg=grp({"cursor":"pointer"});cg.onclick=()=>showInstCard("pub");
+  mkEl("ellipse",{cx:358,cy:170,rx:"22",ry:"14",fill:"rgba(255,255,255,0.92)"},cg);
+  mkEl("ellipse",{cx:345,cy:176,rx:"16",ry:"11",fill:"rgba(255,255,255,0.92)"},cg);
+  mkEl("ellipse",{cx:371,cy:176,rx:"14",ry:"10",fill:"rgba(255,255,255,0.92)"},cg);
+  txt("Firebase",{x:358,y:173,"text-anchor":"middle","font-size":"8","font-weight":"800","fill":"#0369A1"},cg);
+  txt("+ Público",{x:358,y:184,"text-anchor":"middle","font-size":"7.5","font-weight":"700","fill":"#0369A1"},cg);
+  svg.appendChild(cg);
+
+  // ── LINHAS DE CONEXÃO ANIMADAS ──
+  // T1,T2,T3 → Wi-Fi
+  drawCable(78,325, 342,267, "#22C55E");
+  drawCable(195,318, 342,267, "#22C55E");
+  drawCable(312,325, 342,267, "#22C55E");
+  // Wi-Fi → Starlink
+  drawCable(342,262, 358,258, "#60A5FA");
+  // Starlink → Firebase (seta para cima)
+  drawCable(358,250, 358,186, "#F97316");
+  // Solar → Wi-Fi (energia)
+  drawCable(20,263, 333,267, "#FCD34D",true);
+
+  // Legendas das setas
+  txt("dados Wi-Fi",{x:240,y:295,"font-size":"7.5","fill":"#22C55E","font-weight":"700","opacity":"0.9"});
+  txt("internet",{x:350,y:242,"font-size":"7","fill":"#60A5FA","font-weight":"700"});
+  txt("Firebase",{x:368,y:218,"font-size":"7","fill":"#F97316","font-weight":"700"});
+  txt("energia",{x:170,y:268,"font-size":"7","fill":"#D97706","font-weight":"700","opacity":"0.85"});
+
+  // ── LEGENDA DOS SENSORES ──
+  const legY=510;
+  txt("Sensores nas trincheiras:",{x:8,y:legY,"font-size":"8.5","font-weight":"700","fill":"#444"});
+  const legItems=[
+    {c:"#0369A1",l:"TDR-300 Umidade"},
+    {c:"#DC2626",l:"Pt100 Temperatura"},
+    {c:"#7C3AED",l:"5TE EC/pH"},
+    {c:"#166534",l:"Câmara GEE"},
+  ];
+  legItems.forEach(({c,l},i)=>{
+    const lx=8+i*96;
+    mkEl("rect",{x:lx,y:legY+5,width:8,height:8,rx:"2",fill:c});
+    txt(l,{x:lx+11,y:legY+12,"font-size":"7.5","fill":"#555"});
+  });
+
+  // ── LED PULSE ANIMATION ──
+  const leds=svg.querySelectorAll(".inst-led");
+  let ledT=0;
+  function pulseLeds(){
+    ledT+=0.08;
+    leds.forEach((led,i)=>{
+      const phase=i*0.7;
+      const op=0.4+0.6*Math.abs(Math.sin(ledT+phase));
+      led.setAttribute("opacity",op.toFixed(2));
+    });
+    requestAnimationFrame(pulseLeds);
+  }
+  pulseLeds();
+}
+
+function showInstCard(id){
+  const eq=EQUIP.find(e=>e.id===id);
+  if(!eq) return;
+  document.getElementById("inst-card-name").textContent=eq.name;
+  document.getElementById("inst-card-tag").textContent=eq.tag;
+  document.getElementById("inst-card-body").textContent=eq.info;
+  document.getElementById("inst-card").style.display="block";
+  document.getElementById("inst-card").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+// ══ MESOCOSMOS 3D ══
+let mesoDone=false;
+let mesoActive=0;
+let mesoFase=1;
+
+const MESO_FASE_INFO=[
+  {fase:1, titulo:"🔵 Fase 1 · Monitoramento basal (D1–D9)",
+   desc:"Os 4 mesocosmos são montados com solo de turfa e diferentes lâminas de água. A câmara de vidro é posicionada sobre cada mesocosmo individualmente para medir CO₂ e CH₄ (Los Gatos UGGA). Adicionalmente: umidade, temperatura, condutividade e pH são medidos a cada 48h."},
+  {fase:2, titulo:"🍂 Fase 2 · Adição de serrapilheira (D10–D19)",
+   desc:"Serrapilheira do Pantanal é adicionada sobre o solo de cada mesocosmo (quantidade padronizada por área). Continua o monitoramento de GEE + umidade + temperatura + condutividade + pH. Espera-se aumento de CO₂ (decomposição aeróbia), CH₄ (fermentação anaeróbia nos tratamentos úmidos) e queda no pH."},
+  {fase:3, titulo:"🔥 Fase 3 · Queima experimental (D20–D30)",
+   desc:"Após secagem controlada dos mesocosmos, realiza-se a queima experimental do solo + serrapilheira. Coleta das emissões durante a combustão. Determinação da temperatura de ignição, velocidade de frente de fogo e emissões totais de CO₂ e CH₄. Comparação entre os 4 tratamentos hídricos para cálculo do IVQS."},
+];
+
+// Referências para objetos 3D das fases (populado no initMeso)
+let mesoLitterMeshes=[];   // serrapilheira por tratamento
+let mesoFireMeshes=[];     // chamas por tratamento
+let mesoCharMeshes=[];     // solo queimado por tratamento
+let mesoSceneRef=null;
+
+function mesoSetFase(f){
+  mesoFase=f;
+  // Atualiza botões
+  [1,2,3].forEach(i=>{
+    const b=document.getElementById("meso-fase-"+i);
+    if(!b) return;
+    const colors={1:"#0369A1",2:"#D97706",3:"#DC2626"};
+    const c=colors[i];
+    b.style.background=i===f?c:"#fff";
+    b.style.color=i===f?"#fff":c;
+    b.style.borderColor=c;
+  });
+  // Banner
+  const info=MESO_FASE_INFO[f-1];
+  const banner=document.getElementById("meso-fase-banner");
+  const bgMap={"1":"#EFF6FF","2":"#FEF3C7","3":"#FEE2E2"};
+  const brMap={"1":"#BAE6FD","2":"#FDE68A","3":"#FECACA"};
+  const tcMap={"1":"#0C4A6E","2":"#78350F","3":"#7F1D1D"};
+  banner.style.background=bgMap[f];
+  banner.style.borderColor=brMap[f];
+  banner.style.color=tcMap[f];
+  banner.innerHTML="<strong>"+info.titulo+"</strong><br>"+info.desc;
+  // Atualiza visibilidade dos objetos 3D
+  updateMesoFaseVisuals();
+}
+
+function updateMesoFaseVisuals(){
+  mesoLitterMeshes.forEach(m=>{ if(m) m.visible=(mesoFase>=2); });
+  mesoFireMeshes.forEach(m=>{ if(m) m.visible=(mesoFase===3); });
+  mesoCharMeshes.forEach(m=>{ if(m) m.visible=(mesoFase===3); });
+}
+
+const MESO_TRATS=[
+  {label:"Solo Seco",   agua:0, laminaCm:0,
+   cor:0xC84B11, corH:"#C84B11",
+   desc:"Solo de turfa sem água. Ambiente aeróbio: alta emissão de CO₂ por mineralização, CH₄ mínimo.",
+   agua_info:"Sem água. Solo seco, umidade gravimétrica ~12%."},
+  {label:"Solo Úmido",  agua:2, laminaCm:0,
+   cor:0xD97706, corH:"#D97706",
+   desc:"2L incorporados ao solo (saturado, sem lâmina). Início de anaerobiose parcial nas camadas inferiores.",
+   agua_info:"2L incorporados. Solo saturado sem lâmina d'água visível."},
+  {label:"Solo + 3L",   agua:3, laminaCm:5,
+   cor:0x0369A1, corH:"#0369A1",
+   desc:"Lâmina d'água de ~5 cm acima do solo. Simula inundação moderada (ATTZs). CH₄ aumenta.",
+   agua_info:"3L — lâmina de ~5 cm acima da superfície."},
+  {label:"Solo + 6L",   agua:6, laminaCm:10,
+   cor:0x166534, corH:"#166534",
+   desc:"Lâmina d'água de ~10 cm. Simula cheia do Pantanal. Alta metanogênese anaeróbia.",
+   agua_info:"6L — lâmina de ~10 cm acima da superfície."},
+];
+
+function initMeso(){
+  if(mesoDone) return;
+  const wrap=document.getElementById("meso-wrap");
+  if(!wrap||wrap.offsetWidth===0) return;
+  mesoDone=true;
+
+  // Botões
+  const selRow=document.getElementById("meso-sel-row");
+  if(selRow){
+    MESO_TRATS.forEach((t,i)=>{
+      const b=document.createElement("button");
+      b.id="meso-btn-"+i;
+      b.style.cssText=`flex-shrink:0;padding:5px 11px;border-radius:12px;
+        border:2px solid ${t.corH};background:#fff;color:${t.corH};
+        font-size:9.5px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;
+        white-space:nowrap;transition:all .15s`;
+      b.textContent=t.label;
+      b.onclick=()=>{mesoActive=i;updateMesoActive();moveChamber();showMesoCardById(i);};
+      selRow.appendChild(b);
+    });
+    updateMesoActive();
+  }
+
+  const THREE=window.THREE;
+  if(!THREE){
+    wrap.innerHTML='<div style="padding:40px;text-align:center;color:#888;font-size:13px">Conecte à internet para carregar o experimento 3D.</div>';
+    return;
+  }
+
+  const W=wrap.clientWidth, H=420;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});
+  renderer.setSize(W,H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0xF0EEE8,1);
+  renderer.shadowMap.enabled=true;
+  wrap.appendChild(renderer.domElement);
+
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(46,W/H,0.1,60);
+  camera.position.set(0,5,12); camera.lookAt(0,1.5,0);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const sun=new THREE.DirectionalLight(0xFFFAE0,1.0);
+  sun.position.set(5,12,7); sun.castShadow=true;
+  sun.shadow.camera.left=-15; sun.shadow.camera.right=15;
+  sun.shadow.camera.top=8; sun.shadow.camera.bottom=-8;
+  sun.shadow.mapSize.set(1024,1024);
+  scene.add(sun);
+  scene.add(new THREE.HemisphereLight(0xE8F0FF,0x406830,0.4));
+
+  // Mesa
+  const table=new THREE.Mesh(new THREE.BoxGeometry(16,0.14,5.5),
+    new THREE.MeshPhongMaterial({color:0xDDD0B8,shininess:35}));
+  table.position.set(0,-0.07,0); table.receiveShadow=true; scene.add(table);
+  [[-7.2,-1,-2],[7.2,-1,-2],[-7.2,-1,2],[7.2,-1,2]].forEach(([x,y,z])=>{
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.14,2,0.14),
+      new THREE.MeshLambertMaterial({color:0x9A7755}));
+    leg.position.set(x,y,z); scene.add(leg);
+  });
+
+  const clickMeshes=[], clickInfo={};
+  function reg(m,name,tag,info,cor){m.userData={name,tag,info,cor};clickMeshes.push(m);clickInfo[m.uuid]={name,tag,info,cor};}
+
+  // Dimensões mesocosmo: 25×20×15cm → escala 1u=10cm
+  const BW=2.5, BH=2.0, BD=1.5;
+  const SOIL_H=BH*0.65; // altura do solo dentro da caixa
+  const spacing=3.8;
+  const xStart=-(MESO_TRATS.length-1)/2*spacing;
+
+  // Grupos dos mesocosmos (para saber posição do ativo)
+  const mesoGrps=[];
+
+  MESO_TRATS.forEach((t,ti)=>{
+    const grp=new THREE.Group();
+    const xPos=xStart+ti*spacing;
+
+    // ── CAIXA ACRÍLICA ──
+    // Material acrílico: NÃO transparente visualmente,
+    // apenas paredes finas com cor de acrílico azulado
+    // Usamos faces sólidas com baixíssima opacidade + depthTest normal
+    const acrylMat=new THREE.MeshPhongMaterial({
+      color:0xC8E8FF, transparent:true, opacity:0.30,
+      side:THREE.FrontSide, shininess:120,
+      specular:new THREE.Color(0x8899FF), depthWrite:true
+    });
+    // Paredes (frente visível, não o back)
+    // Só frente e lados — fundo sólido
+    [
+      {g:[BW,BH,0.04],  p:[0,BH/2, BD/2]},   // frente
+      {g:[BW,BH,0.04],  p:[0,BH/2,-BD/2]},   // trás
+      {g:[0.04,BH,BD],  p:[ BW/2,BH/2,0]},   // dir
+      {g:[0.04,BH,BD],  p:[-BW/2,BH/2,0]},   // esq
+    ].forEach(({g,p})=>{
+      const m=new THREE.Mesh(new THREE.BoxGeometry(...g),acrylMat);
+      m.position.set(...p); m.renderOrder=3; grp.add(m);
+    });
+    // Fundo sólido (branco opaco)
+    const base=new THREE.Mesh(new THREE.BoxGeometry(BW,0.05,BD),
+      new THREE.MeshPhongMaterial({color:0xF0F0F0,shininess:20}));
+    base.position.set(0,0.025,0); grp.add(base);
+
+    // Arestas (azul sólido visível de qualquer distância)
+    const edgeMat=new THREE.MeshPhongMaterial({color:0x5599CC,shininess:80});
+    [
+      {s:[BW,0.05,0.05],p:[0,0,   BD/2]}, {s:[BW,0.05,0.05],p:[0,BH, BD/2]},
+      {s:[BW,0.05,0.05],p:[0,0,  -BD/2]}, {s:[BW,0.05,0.05],p:[0,BH,-BD/2]},
+      {s:[0.05,BH,0.05],p:[ BW/2,BH/2, BD/2]},{s:[0.05,BH,0.05],p:[-BW/2,BH/2, BD/2]},
+      {s:[0.05,BH,0.05],p:[ BW/2,BH/2,-BD/2]},{s:[0.05,BH,0.05],p:[-BW/2,BH/2,-BD/2]},
+      {s:[0.05,0.05,BD],p:[ BW/2,0,0]},  {s:[0.05,0.05,BD],p:[-BW/2,0,0]},
+      {s:[0.05,0.05,BD],p:[ BW/2,BH,0]},{s:[0.05,0.05,BD],p:[-BW/2,BH,0]},
+    ].forEach(({s,p})=>{
+      const e=new THREE.Mesh(new THREE.BoxGeometry(...s),edgeMat);
+      e.position.set(...p); grp.add(e);
+    });
+
+    // ── SOLO (camadas) ──
+    const layers=[
+      {f:.09,c:0x1A0800},{f:.13,c:0x3C1E0A},{f:.15,c:0x6B4828},
+      {f:.20,c:0xA07848},{f:.20,c:0xC09860},{f:.23,c:0x4A1E06},
+    ];
+    let sy=0.05;
+    layers.forEach(({f,c})=>{
+      const h=f*SOIL_H;
+      const sm=new THREE.Mesh(new THREE.BoxGeometry(BW-0.1,h,BD-0.1),
+        new THREE.MeshLambertMaterial({color:c}));
+      sm.position.set(0,sy+h/2,0); grp.add(sm); sy+=h;
+    });
+    // sy agora = topo do solo
+
+    // ── ÁGUA ──
+    if(t.laminaCm>0){
+      // Espaço disponível acima do solo dentro da caixa: BH - SOIL_H - 0.08
+      // 5cm real = 40% do espaço; 10cm real = 78% do espaço
+      const space=BH-SOIL_H-0.08;
+      const wH=t.laminaCm===5 ? space*0.40 : space*0.78;
+      const waterMesh=new THREE.Mesh(
+        new THREE.BoxGeometry(BW-0.1,wH,BD-0.1),
+        new THREE.MeshPhongMaterial({color:0x1565C0,shininess:60,transparent:false})
+      );
+      waterMesh.position.set(0,SOIL_H+0.05+wH/2,0);
+      grp.add(waterMesh);
+      // Superfície ondulante
+      const surfMesh=new THREE.Mesh(
+        new THREE.PlaneGeometry(BW-0.12,BD-0.12,8,8),
+        new THREE.MeshPhongMaterial({color:0x42A5F5,shininess:200,specular:new THREE.Color(0xAADDFF)})
+      );
+      surfMesh.rotation.x=-Math.PI/2;
+      surfMesh.position.set(0,SOIL_H+0.05+wH+0.004,0);
+      surfMesh.userData.isWave=true; surfMesh.userData.wavePhase=ti*0.8;
+      grp.add(surfMesh);
+      // Label
+      const lCv=document.createElement("canvas");lCv.width=80;lCv.height=32;
+      const lCtx=lCv.getContext("2d");
+      lCtx.clearRect(0,0,80,32);
+      lCtx.fillStyle="#1565C0";lCtx.font="bold 15px system-ui";lCtx.textAlign="center";
+      lCtx.fillText("~"+t.laminaCm+"cm",40,24);
+      const lSp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lCv),transparent:true}));
+      lSp.scale.set(0.85,0.34,1);
+      lSp.position.set(BW/2+0.65,SOIL_H+0.05+wH/2,0);
+      grp.add(lSp);
+
+    } else if(t.agua===2){
+      // Solo úmido — fina camada escura sobre o solo
+      const moistMesh=new THREE.Mesh(
+        new THREE.BoxGeometry(BW-0.1,0.05,BD-0.1),
+        new THREE.MeshPhongMaterial({color:0x0D3050,shininess:40})
+      );
+      moistMesh.position.set(0,SOIL_H+0.05+0.025,0); grp.add(moistMesh);
+      const mCv=document.createElement("canvas");mCv.width=130;mCv.height=32;
+      const mCtx=mCv.getContext("2d");
+      mCtx.clearRect(0,0,130,32);
+      mCtx.fillStyle="#0369A1";mCtx.font="bold 11px system-ui";mCtx.textAlign="center";
+      mCtx.fillText("solo saturado",65,23);
+      const mSp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(mCv),transparent:true}));
+      mSp.scale.set(1.2,0.30,1);
+      mSp.position.set(BW/2+0.85,SOIL_H+0.1,0);
+      grp.add(mSp);
+    }
+
+    // ── SERRAPILHEIRA (Fase 2) ──
+    // Camada de material orgânico sobre o solo (ou sobre a água)
+    const wHcur=t.laminaCm>0 ? (t.laminaCm===5?(BH-SOIL_H-0.08)*0.40:(BH-SOIL_H-0.08)*0.78) : 0;
+    const litterY=SOIL_H+0.05+wHcur;
+    const litterMesh=new THREE.Mesh(
+      new THREE.BoxGeometry(BW-0.1,0.10,BD-0.1),
+      new THREE.MeshLambertMaterial({color:0x6B3A10})
+    );
+    litterMesh.position.set(0,litterY+0.05,0);
+    litterMesh.visible=false; // oculto na fase 1
+    grp.add(litterMesh);
+    mesoLitterMeshes.push(litterMesh);
+    // Detalhes da serrapilheira (fibras)
+    for(let fi=0;fi<6;fi++){
+      const fib=new THREE.Mesh(
+        new THREE.BoxGeometry(0.3+Math.random()*0.6,0.03,0.05+Math.random()*0.1),
+        new THREE.MeshLambertMaterial({color:Math.random()>0.5?0x8B5A2B:0x5C3A1E})
+      );
+      fib.position.set((Math.random()-0.5)*(BW-0.3),litterY+0.11,(Math.random()-0.5)*(BD-0.2));
+      fib.rotation.y=Math.random()*Math.PI;
+      fib.visible=false;
+      grp.add(fib);
+      mesoLitterMeshes.push(fib);
+    }
+
+    // ── CHAMAS (Fase 3) ──
+    const fireGrp=new THREE.Group();
+    fireGrp.position.set(0,litterY+0.12,0);
+    // Cones de fogo
+    for(let fi=0;fi<5;fi++){
+      const fx=(Math.random()-0.5)*(BW-0.4);
+      const fz=(Math.random()-0.5)*(BD-0.3);
+      const fh=0.15+Math.random()*0.25;
+      const cone=new THREE.Mesh(
+        new THREE.ConeGeometry(0.07+Math.random()*0.06,fh,6),
+        new THREE.MeshPhongMaterial({
+          color:fi%2===0?0xFF6600:0xFF3300,
+          emissive:new THREE.Color(fi%2===0?0xDD4400:0xAA2200),
+          transparent:true,opacity:0.85,shininess:20
+        })
+      );
+      cone.position.set(fx,fh/2,fz);
+      cone.userData.isFlame=true;
+      cone.userData.flamePhase=fi*0.8+ti*0.3;
+      fireGrp.add(cone);
+    }
+    // Fumaça
+    for(let si=0;si<3;si++){
+      const smoke=new THREE.Mesh(
+        new THREE.SphereGeometry(0.12+si*0.06,8,8),
+        new THREE.MeshPhongMaterial({color:0x555555,transparent:true,opacity:0.3-si*0.07})
+      );
+      smoke.position.set((Math.random()-0.5)*0.6,0.35+si*0.2,(Math.random()-0.5)*0.4);
+      smoke.userData.isSmoke=true;
+      smoke.userData.smokePhase=si*0.5+ti*0.4;
+      fireGrp.add(smoke);
+    }
+    fireGrp.visible=false;
+    grp.add(fireGrp);
+    mesoFireMeshes.push(fireGrp);
+
+    // Solo queimado (Fase 3) — camada escura de carvão
+    const charMesh=new THREE.Mesh(
+      new THREE.BoxGeometry(BW-0.1,0.06,BD-0.1),
+      new THREE.MeshLambertMaterial({color:0x111111})
+    );
+    charMesh.position.set(0,litterY+0.03,0);
+    charMesh.visible=false;
+    grp.add(charMesh);
+    mesoCharMeshes.push(charMesh);
+
+    // Label tratamento
+    const lbCv=document.createElement("canvas");lbCv.width=220;lbCv.height=44;
+    const lbCtx=lbCv.getContext("2d");
+    lbCtx.clearRect(0,0,220,44);
+    lbCtx.fillStyle=t.corH;lbCtx.font="bold 17px system-ui";lbCtx.textAlign="center";
+    lbCtx.fillText(t.label,110,30);
+    const lbSp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lbCv),transparent:true}));
+    lbSp.scale.set(2.1,0.42,1);
+    lbSp.position.set(0,BH+0.6,0);
+    grp.add(lbSp);
+
+    // Hit mesh clicável
+    const hit=new THREE.Mesh(
+      new THREE.BoxGeometry(BW+0.2,BH+0.8,BD+0.2),
+      new THREE.MeshBasicMaterial({transparent:true,opacity:0})
+    );
+    hit.position.set(0,BH/2,0); hit.userData.tratIdx=ti;
+    grp.add(hit); clickMeshes.push(hit);
+    reg(hit,t.label,t.agua_info,t.desc,t.corH);
+
+    grp.position.set(xPos,0,0);
+    scene.add(grp);
+    mesoGrps.push({grp,xPos});
+  });
+
+  // ── CÂMARA DE VIDRO (1 única, move entre mesocosmos) ──
+  // Câmara DENTRO do mesocosmo — cilindro baixo sobre o solo
+  const chamberGrp=new THREE.Group();
+  const camR=0.52, camH=0.55;
+
+  // Cilindro de vidro (paredes)
+  const glassMat=new THREE.MeshPhongMaterial({
+    color:0xDDEEFF,transparent:true,opacity:0.35,
+    side:THREE.DoubleSide,shininess:160,depthWrite:false
+  });
+  const chamWalls=new THREE.Mesh(new THREE.CylinderGeometry(camR,camR,camH,32,1,true),glassMat);
+  chamberGrp.add(chamWalls);
+  // Anel inferior e superior
+  [0,camH].forEach(y=>{
+    const ring=new THREE.Mesh(
+      new THREE.TorusGeometry(camR,0.018,8,32),
+      new THREE.MeshPhongMaterial({color:0x88BBFF,shininess:100})
+    );
+    ring.rotation.x=Math.PI/2; ring.position.y=y; chamberGrp.add(ring);
+  });
+  // Tampa (disco vidro)
+  const capMesh=new THREE.Mesh(
+    new THREE.CylinderGeometry(camR,camR,0.022,32),
+    new THREE.MeshPhongMaterial({color:0xCCEEFF,transparent:true,opacity:0.55,shininess:120})
+  );
+  capMesh.position.y=camH+0.011; chamberGrp.add(capMesh);
+  // Conector do tubo (lateral)
+  const connMesh=new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03,0.03,0.28,8),
+    new THREE.MeshPhongMaterial({color:0x333333})
+  );
+  connMesh.rotation.z=Math.PI/2;
+  connMesh.position.set(camR+0.14,camH*0.75,0);
+  chamberGrp.add(connMesh);
+  scene.add(chamberGrp);
+
+  // ── LOS GATOS UGGA — AMARELO ──
+  const lgGrp=new THREE.Group();
+  const lgBody=new THREE.Mesh(new THREE.BoxGeometry(2.4,1.1,1.3),
+    new THREE.MeshPhongMaterial({color:0xF5C800,shininess:55,specular:new THREE.Color(0xFFDD44)}));
+  lgBody.position.y=0.55; lgGrp.add(lgBody);
+  const lgFront=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.85,0.06),
+    new THREE.MeshPhongMaterial({color:0x111111,shininess:80}));
+  lgFront.position.set(0,0.55,0.68); lgGrp.add(lgFront);
+  // Tela
+  const lgCv=document.createElement("canvas");lgCv.width=256;lgCv.height=120;
+  const lgCtx=lgCv.getContext("2d");
+  lgCtx.fillStyle="#001818";lgCtx.fillRect(0,0,256,120);
+  lgCtx.fillStyle="#00FF88";lgCtx.font="bold 11px monospace";lgCtx.fillText("LOS GATOS RES.",8,17);
+  lgCtx.fillStyle="#88FFCC";lgCtx.font="10px monospace";
+  lgCtx.fillText("Ultra GGA · UGGA",8,32);lgCtx.fillText("CO2: --- ppm",8,52);
+  lgCtx.fillText("CH4: --- ppb",8,66);lgCtx.fillText("H2O: --- ppt",8,80);
+  lgCtx.fillStyle="#00CCFF";lgCtx.fillText("Laser: READY",8,100);lgCtx.fillText("Flow: 0.5 L/min",8,113);
+  const lgSp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lgCv),transparent:true}));
+  lgSp.scale.set(2.1,0.98,1); lgSp.position.set(0,0.55,0.70); lgGrp.add(lgSp);
+  const lgLCv=document.createElement("canvas");lgLCv.width=256;lgLCv.height=44;
+  const lgLCtx=lgLCv.getContext("2d");
+  lgLCtx.clearRect(0,0,256,44);
+  lgLCtx.fillStyle="#F5C800";lgLCtx.font="bold 15px system-ui";lgLCtx.textAlign="center";
+  lgLCtx.fillText("Los Gatos UGGA",128,30);
+  const lgLSp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lgLCv),transparent:true}));
+  lgLSp.scale.set(2.0,0.34,1); lgLSp.position.set(0,1.45,0); lgGrp.add(lgLSp);
+  // Porta de entrada (lateral esquerda)
+  const portMesh=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,0.12,8),
+    new THREE.MeshPhongMaterial({color:0x333333}));
+  portMesh.rotation.z=Math.PI/2; portMesh.position.set(-1.26,0.75,0); lgGrp.add(portMesh);
+  const lgHit=new THREE.Mesh(new THREE.BoxGeometry(2.6,1.3,1.5),
+    new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
+  lgHit.position.y=0.55; lgGrp.add(lgHit); clickMeshes.push(lgHit);
+  reg(lgHit,"Los Gatos UGGA","Ultra-portable GGA",
+    "Los Gatos Research UGGA. Mede CO₂, CH₄ e H₂O por espectroscopia laser OA-ICOS. Precisão: CO₂ <0.5 ppm, CH₄ <2 ppb. Fluxo: 0.5 L/min. A câmara é posicionada dentro de um mesocosmo de cada vez e o tubo conecta à entrada do aparelho. Daiana move a câmara manualmente entre os tratamentos.",
+    "#F5C800");
+  lgGrp.position.set(0,-0.07,2.8);
+  scene.add(lgGrp);
+
+  // ── CABO SEMI-TRANSPARENTE (1 cabo: câmara → Los Gatos) ──
+  let cableMesh=null;
+  const cableMat=new THREE.MeshPhongMaterial({
+    color:0x222222,transparent:true,opacity:0.55,shininess:40,depthWrite:false
+  });
+
+  function getWaterH(ti){
+    if(MESO_TRATS[ti].laminaCm===0) return 0;
+    const space=BH-SOIL_H-0.08;
+    return MESO_TRATS[ti].laminaCm===5 ? space*0.40 : space*0.78;
+  }
+
+  function getChamberWorldPos(){
+    const ti=mesoActive;
+    const xPos=xStart+ti*spacing;
+    const wH=getWaterH(ti);
+    const camBaseY=SOIL_H+0.05+wH;
+    return new THREE.Vector3(xPos+camR+0.14+0.28, camBaseY+camH*0.75, 0);
+  }
+
+  function updateCable(){
+    if(cableMesh){scene.remove(cableMesh);cableMesh.geometry.dispose();cableMesh=null;}
+    const connOut=getChamberWorldPos();
+    const lgPort=new THREE.Vector3(-1.26-0.06, -0.07+0.75, 2.8);
+    const mid1=new THREE.Vector3(connOut.x+0.8, connOut.y+0.5, connOut.z+0.8);
+    const mid2=new THREE.Vector3(lgPort.x-0.5,  lgPort.y+0.6, lgPort.z-0.5);
+    const curve=new THREE.CatmullRomCurve3([connOut,mid1,mid2,lgPort]);
+    cableMesh=new THREE.Mesh(new THREE.TubeGeometry(curve,28,0.022,6,false),cableMat);
+    scene.add(cableMesh);
+  }
+
+  function moveChamber(){
+    const ti=mesoActive;
+    const xPos=xStart+ti*spacing;
+    const wH=getWaterH(ti);
+    const camBaseY=SOIL_H+0.05+wH;
+    chamberGrp.position.set(xPos, camBaseY, 0);
+    updateCable();
+    updateMesoActive();
+  }
+  moveChamber();
+
+  // Cicla a câmara a cada 4s
+  setInterval(()=>{
+    mesoActive=(mesoActive+1)%MESO_TRATS.length;
+    moveChamber();
+  },4000);
+
+  // ── CÂMERA ORBITAL ──
+  let camTheta=-0.1, camPhi=0.50, camRadius=12;
+  let isDragging=false,lx=0,ly=0,tapX=0,tapY=0,pinchDist=0;
+  function updateCam(){
+    camera.position.set(
+      camRadius*Math.sin(camPhi)*Math.sin(camTheta),
+      camRadius*Math.cos(camPhi)+1.5,
+      camRadius*Math.sin(camPhi)*Math.cos(camTheta)
+    );
+    camera.lookAt(0,1.2,0);
+  }
+  updateCam();
+  const cv=renderer.domElement; cv.style.touchAction="none";
+  cv.addEventListener("mousedown",e=>{isDragging=true;lx=tapX=e.clientX;ly=tapY=e.clientY;e.preventDefault();});
+  window.addEventListener("mousemove",e=>{if(!isDragging)return;camTheta-=(e.clientX-lx)*0.011;camPhi=Math.max(0.15,Math.min(1.4,camPhi-(e.clientY-ly)*0.009));lx=e.clientX;ly=e.clientY;updateCam();});
+  window.addEventListener("mouseup",e=>{isDragging=false;if(Math.abs(e.clientX-tapX)<8&&Math.abs(e.clientY-tapY)<8)doMesoTap(e.clientX,e.clientY);});
+  cv.addEventListener("wheel",e=>{camRadius=Math.max(4,Math.min(20,camRadius+e.deltaY*0.015));updateCam();e.preventDefault();},{passive:false});
+  cv.addEventListener("touchstart",e=>{
+    if(e.touches.length===1){isDragging=true;lx=tapX=e.touches[0].clientX;ly=tapY=e.touches[0].clientY;}
+    else if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;pinchDist=Math.sqrt(dx*dx+dy*dy);}
+    e.preventDefault();
+  },{passive:false});
+  window.addEventListener("touchmove",e=>{
+    if(e.touches.length===1&&isDragging){camTheta-=(e.touches[0].clientX-lx)*0.011;camPhi=Math.max(0.15,Math.min(1.4,camPhi-(e.touches[0].clientY-ly)*0.009));lx=e.touches[0].clientX;ly=e.touches[0].clientY;updateCam();}
+    else if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;const nd=Math.sqrt(dx*dx+dy*dy);camRadius=Math.max(4,Math.min(20,camRadius-(nd-pinchDist)*0.05));pinchDist=nd;updateCam();}
+  },{passive:false});
+  window.addEventListener("touchend",e=>{isDragging=false;const t=e.changedTouches[0];if(Math.abs(t.clientX-tapX)<12&&Math.abs(t.clientY-tapY)<12)doMesoTap(t.clientX,t.clientY);});
+
+  const mesoRay=new THREE.Raycaster(),mesoM2d=new THREE.Vector2();
+  function doMesoTap(ex,ey){
+    const rect=cv.getBoundingClientRect();
+    mesoM2d.x=((ex-rect.left)/rect.width)*2-1;
+    mesoM2d.y=-((ey-rect.top)/rect.height)*2+1;
+    mesoRay.setFromCamera(mesoM2d,camera);
+    const hits=mesoRay.intersectObjects(clickMeshes,false);
+    if(!hits.length){document.getElementById("meso-card").style.display="none";return;}
+    const info=clickInfo[hits[0].object.uuid];
+    if(!info)return;
+    const ti=hits[0].object.userData.tratIdx;
+    if(ti!==undefined&&ti>=0){mesoActive=ti;moveChamber();}
+    showMesoCardInfo(info);
+  }
+
+  let animT=0;
+  function mesoAnimate(){
+    requestAnimationFrame(mesoAnimate);
+    animT+=0.016;
+    scene.traverse(o=>{
+      if(o.userData.isWave){
+        const ph=o.userData.wavePhase||0;
+        const pos=o.geometry.attributes.position;
+        for(let vi=0;vi<pos.count;vi++){
+          const x=pos.getX(vi),z=pos.getZ(vi);
+          pos.setY(vi,Math.sin(x*2.2+animT*1.4+ph)*0.01+Math.cos(z*1.8+animT+ph)*0.007);
+        }
+        pos.needsUpdate=true;
+      }
+      // Chamas pulsam
+      if(o.userData.isFlame){
+        const ph=o.userData.flamePhase||0;
+        const s=0.85+0.3*Math.abs(Math.sin(animT*4+ph));
+        o.scale.set(s,0.9+0.25*Math.abs(Math.sin(animT*3.5+ph)),s);
+        o.material.opacity=0.7+0.2*Math.abs(Math.sin(animT*5+ph));
+      }
+      // Fumaça sobe
+      if(o.userData.isSmoke){
+        const ph=o.userData.smokePhase||0;
+        o.position.y+=0.003;
+        if(o.position.y>1.0) o.position.y=0.3;
+        o.material.opacity=Math.max(0,0.25-o.position.y*0.15);
+      }
+    });
+    renderer.render(scene,camera);
+  }
+  mesoAnimate();
+
+  // Inicializar banner fase 1
+  mesoSetFase(1);
+}
+
+function updateMesoActive(){
+  MESO_TRATS.forEach((t,i)=>{
+    const b=document.getElementById("meso-btn-"+i);
+    if(b){b.style.background=i===mesoActive?t.corH:"#fff";b.style.color=i===mesoActive?"#fff":t.corH;}
+  });
+}
+function showMesoCardById(i){
+  const t=MESO_TRATS[i];
+  showMesoCardInfo({name:t.label,tag:t.agua_info,info:t.desc,cor:t.corH});
+}
+function showMesoCardInfo(info){
+  const card=document.getElementById("meso-card");
+  document.getElementById("meso-card-name").textContent=info.name;
+  document.getElementById("meso-card-tag").textContent=info.tag;
+  document.getElementById("meso-card-body").textContent=info.info;
+  const head=document.getElementById("meso-card-head");
+  const cor=info.cor||"#0369A1";
+  head.style.background=cor+"18";
+  document.getElementById("meso-card-tag").style.background=cor;
+  document.getElementById("meso-card-tag").style.color="#fff";
+  card.style.display="block";
+}
+
+
+// Dados analíticos reais por horizonte (valores representativos da literatura pantaneira)
+// Variáveis: MO(%), pH, Condutividade(µS/cm), Umidade(%), Temperatura(°C estimada)
+const FATIA_VARS = [
+  // [MO%,  pH,  Cond, Umid%, Temp°C]
+  [62,  4.2,  85,  13,  28.5],  // 0  Horizonte O
+  [38,  4.5,  72,  18,  26.8],  // 1  Horizonte A
+  [22,  4.8,  64,  28,  25.2],  // 2  Horizonte AB
+  [8,   5.1,  58,  42,  24.1],  // 3  Horizonte B1
+  [3.5, 5.4,  52,  51,  23.0],  // 4  Horizonte B2
+  [1.2, 5.7,  44,  60,  22.2],  // 5  Horizonte C
+  [4.5, 5.0,  68,  65,  21.8],  // 6  Contato
+  [55,  4.1,  120, 72,  21.0],  // 7  Turfa I
+  [68,  3.9,  145, 74,  20.5],  // 8  Turfa II
+  [78,  3.7,  168, 75,  20.2],  // 9  Turfa III
+  [85,  3.5,  192, 76,  20.0],  // 10 Turfa basal
+];
+
+const VARS_INFO = [
+  {key:"MO",      label:"Mat. Orgânica", unit:"%",     max:100, color:"#C84B11"},
+  {key:"pH",      label:"pH",            unit:"",      max:7,   color:"#0369A1"},
+  {key:"Cond",    label:"Condutividade", unit:"µS/cm", max:200, color:"#7C3AED"},
+  {key:"Umid",    label:"Umidade",       unit:"%",     max:100, color:"#16A34A"},
+  {key:"Temp",    label:"Temperatura",   unit:"°C",    max:35,  color:"#D97706"},
+];
+
+// Fatias selecionadas (índices de LY, default: O, B2, Turfa II)
+let fatiasEsc = [0, 4, 8];
+let fatiasScene = null;
+
+function buildFatiaSel(){
+  const row = document.getElementById("fatia-sel-row");
+  if(!row) return;
+  row.innerHTML = "";
+  LY.forEach((l,i)=>{
+    const btn = document.createElement("button");
+    btn.style.cssText = `
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      padding:5px 7px;border-radius:8px;border:2px solid transparent;
+      background:${l.c};cursor:pointer;font-family:system-ui,sans-serif;
+      min-width:48px;transition:all .15s;
+    `;
+    const idx = fatiasEsc.indexOf(i);
+    if(idx>=0){
+      btn.style.border = "2px solid #F97316";
+      btn.style.boxShadow = "0 0 0 2px #F97316";
+    }
+    const num = document.createElement("span");
+    num.style.cssText = "font-size:9px;font-weight:800;color:rgba(255,255,255,0.9)";
+    num.textContent = idx>=0 ? ["①","②","③"][idx] : "";
+    const dep = document.createElement("span");
+    dep.style.cssText = "font-size:7px;color:rgba(255,255,255,0.75);white-space:nowrap";
+    dep.textContent = l.cm.split("–")[0]+"cm";
+    btn.appendChild(num); btn.appendChild(dep);
+    btn.onclick = ()=>toggleFatia(i);
+    row.appendChild(btn);
+  });
+}
+
+function toggleFatia(lyIdx){
+  const pos = fatiasEsc.indexOf(lyIdx);
+  if(pos>=0){
+    fatiasEsc.splice(pos,1);
+  } else {
+    if(fatiasEsc.length>=3) fatiasEsc.shift();
+    fatiasEsc.push(lyIdx);
+  }
+  buildFatiaSel();
+  renderFatias3D();
+  renderFatiasCards();
+}
+
+function renderFatias(){
+  buildFatiaSel();
+  renderFatias3D();
+  renderFatiasCards();
+}
+
+// ── Three.js: 3 discos (fatias) girando ──
+let fatiasRenderer=null;
+let fatiasAnimId=null;
+
+function renderFatias3D(){
+  const wrap = document.getElementById("fatias-canvas-wrap");
+  if(!wrap) return;
+
+  // Cancelar animação anterior e destruir renderer anterior
+  if(fatiasAnimId){cancelAnimationFrame(fatiasAnimId);fatiasAnimId=null;}
+  if(fatiasRenderer){fatiasRenderer.dispose();fatiasRenderer=null;}
+  wrap.innerHTML = "";
+
+  const THREE = window.THREE;
+  if(!THREE) return;
+  const W = wrap.clientWidth||340, H = 260;
+  const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(W,H);
+  renderer.setClearColor(0xF0F4F8,1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+  wrap.appendChild(renderer.domElement);
+  fatiasRenderer=renderer;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45,W/H,0.1,50);
+  camera.position.set(0,0,9);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.75));
+  const dl = new THREE.DirectionalLight(0xffffff,0.9);
+  dl.position.set(4,6,6); scene.add(dl);
+  const dl2 = new THREE.DirectionalLight(0xffffff,0.3);
+  dl2.position.set(-4,-3,-4); scene.add(dl2);
+
+  const discs = [];
+  const N = Math.max(1,fatiasEsc.length);
+  const spacing = 2.6;
+  const startX = -(N-1)*spacing/2;
+
+  fatiasEsc.forEach((lyIdx,i)=>{
+    const l = LY[lyIdx];
+    const hex = parseInt(l.c.replace('#',''),16);
+    const col = new THREE.Color(hex);
+
+    // Disco de solo (fatia de 5cm)
+    const geo = new THREE.CylinderGeometry(0.9,0.9,0.28,48,1);
+    const mat = new THREE.MeshPhongMaterial({color:col,shininess:30,specular:new THREE.Color(0x222222)});
+    const disc = new THREE.Mesh(geo,mat);
+    disc.position.set(startX+i*spacing,0,0);
+    disc.rotation.x = 0.3;
+    scene.add(disc);
+
+    // Anel acrílico ao redor (simula tubo)
+    const rGeo = new THREE.TorusGeometry(0.95,0.06,12,48);
+    const rMat = new THREE.MeshPhongMaterial({color:0xAADDFF,transparent:true,opacity:0.55,shininess:120});
+    const ring = new THREE.Mesh(rGeo,rMat);
+    ring.position.set(startX+i*spacing,0,0);
+    ring.rotation.x = 0.3 + Math.PI/2;
+    scene.add(ring);
+
+    // Label profundidade
+    const cv = document.createElement("canvas"); cv.width=160;cv.height=40;
+    const ctx = cv.getContext("2d");
+    ctx.clearRect(0,0,160,40);
+    ctx.fillStyle="#333"; ctx.font="bold 18px system-ui";ctx.textAlign="center";
+    ctx.fillText(l.cm+" cm",80,28);
+    const tex = new THREE.CanvasTexture(cv);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true}));
+    sp.scale.set(1.6,0.4,1);
+    sp.position.set(startX+i*spacing,-1.3,0);
+    scene.add(sp);
+
+    // Label nome horizonte
+    const cv2 = document.createElement("canvas"); cv2.width=240;cv2.height=34;
+    const ctx2 = cv2.getContext("2d");
+    ctx2.clearRect(0,0,240,34);
+    ctx2.fillStyle="#C84B11"; ctx2.font="bold 15px system-ui";ctx2.textAlign="center";
+    ctx2.fillText(l.n,120,24);
+    const tex2 = new THREE.CanvasTexture(cv2);
+    const sp2 = new THREE.Sprite(new THREE.SpriteMaterial({map:tex2,transparent:true}));
+    sp2.scale.set(2.0,0.34,1);
+    sp2.position.set(startX+i*spacing,-1.75,0);
+    scene.add(sp2);
+
+    // Barras de variáveis ao redor do disco
+    VARS_INFO.forEach((v,vi)=>{
+      const val = FATIA_VARS[lyIdx][vi];
+      const pct = val/v.max;
+      const angle = (vi/VARS_INFO.length)*Math.PI*2 - Math.PI/2;
+      const r = 0.95 + pct*0.6;
+      const bx = Math.cos(angle)*r;
+      const by = Math.sin(angle)*r;
+      const bGeo = new THREE.CylinderGeometry(0.06,0.06,pct*0.55+0.05,8);
+      const bMat = new THREE.MeshPhongMaterial({color:parseInt(v.color.replace('#',''),16)});
+      const bar = new THREE.Mesh(bGeo,bMat);
+      bar.position.set(startX+i*spacing+bx,by,0);
+      scene.add(bar);
+    });
+
+    discs.push(disc);
+  });
+
+  // Rotação por drag
+  let drag=false,lx=0,ry=0;
+  const cv3=renderer.domElement;
+  cv3.addEventListener("mousedown",e=>{drag=true;lx=e.clientX;e.preventDefault();});
+  window.addEventListener("mousemove",e=>{if(!drag)return;ry+=(e.clientX-lx)*0.015;lx=e.clientX;discs.forEach(d=>d.rotation.y=ry);});
+  window.addEventListener("mouseup",()=>drag=false);
+  cv3.addEventListener("touchstart",e=>{drag=true;lx=e.touches[0].clientX;e.preventDefault();},{passive:false});
+  window.addEventListener("touchmove",e=>{if(!drag)return;ry+=(e.touches[0].clientX-lx)*0.015;lx=e.touches[0].clientX;discs.forEach(d=>d.rotation.y=ry);},{passive:false});
+  window.addEventListener("touchend",()=>drag=false);
+
+  let t=0;
+  function animate(){
+    fatiasAnimId=requestAnimationFrame(animate);
+    t+=0.008;
+    discs.forEach((d,i)=>{ d.position.y=Math.sin(t+i*1.1)*0.08; });
+    renderer.render(scene,camera);
+  }
+  animate();
+}
+
+// ── Cards de variáveis analíticas ──
+function renderFatiasCards(){
+  const cont = document.getElementById("fatias-cards");
+  if(!cont) return;
+  cont.innerHTML = "";
+
+  if(fatiasEsc.length===0){
+    cont.innerHTML='<div style="text-align:center;color:#ccc;padding:20px;font-size:13px">Selecione fatias acima para comparar</div>';
+    return;
+  }
+
+  // Card por variável
+  VARS_INFO.forEach((v,vi)=>{
+    const card = document.createElement("div");
+    card.style.cssText="background:#fff;border-radius:12px;border:1px solid #E5E0D8;padding:12px 14px;box-shadow:0 2px 6px rgba(0,0,0,.05)";
+
+    const title = document.createElement("div");
+    title.style.cssText=`font-size:11px;font-weight:700;color:${v.color};text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px`;
+    title.innerHTML=`<span style="width:10px;height:10px;border-radius:50%;background:${v.color};display:inline-block"></span>${v.label}${v.unit?" ("+v.unit+")":""}`;
+    card.appendChild(title);
+
+    // Barras por fatia
+    fatiasEsc.forEach((lyIdx,i)=>{
+      const l = LY[lyIdx];
+      const val = FATIA_VARS[lyIdx][vi];
+      const pct = Math.min(100, val/v.max*100);
+
+      const row = document.createElement("div");
+      row.style.cssText="margin-bottom:8px";
+
+      const top = document.createElement("div");
+      top.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px";
+      top.innerHTML=`
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:12px;height:12px;border-radius:3px;background:${l.c};flex-shrink:0"></div>
+          <span style="font-size:11px;font-weight:600;color:#1C1410">${l.n}</span>
+          <span style="font-size:9px;color:#aaa">${l.cm} cm</span>
+        </div>
+        <span style="font-size:13px;font-weight:800;color:${v.color}">${val}${v.unit}</span>
+      `;
+      row.appendChild(top);
+
+      const track = document.createElement("div");
+      track.style.cssText="height:8px;background:#F0EDE8;border-radius:4px;overflow:hidden";
+      const fill = document.createElement("div");
+      fill.style.cssText=`height:100%;width:${pct}%;background:${v.color};border-radius:4px;transition:width .6s`;
+      track.appendChild(fill); row.appendChild(track);
+      card.appendChild(row);
+    });
+
+    // Comparação rápida (quem tem mais)
+    if(fatiasEsc.length>1){
+      const vals = fatiasEsc.map(idx=>FATIA_VARS[idx][vi]);
+      const maxVal = Math.max(...vals);
+      const minVal = Math.min(...vals);
+      const diff = document.createElement("div");
+      diff.style.cssText="margin-top:6px;padding:6px 8px;background:#FAFAF8;border-radius:6px;font-size:10px;color:#888;border-left:3px solid "+v.color;
+      diff.textContent = `Variação: ${minVal}→${maxVal} ${v.unit} · Δ = ${(maxVal-minVal).toFixed(1)} ${v.unit}`;
+      card.appendChild(diff);
+    }
+
+    cont.appendChild(card);
+  });
+}
+
+// ══ BBQ ══
+let bS=0,bR=false,bTm=null;
+function dB(){
+  const svg=document.getElementById("s-b");svg.innerHTML="";
+  const df=se("defs",{},svg);
+  const fg=se("linearGradient",{id:"fire",x1:"0",y1:"1",x2:"0",y2:"0"},df);
+  se("stop",{"offset":"0%","stop-color":"#DC2626"},fg);se("stop",{"offset":"60%","stop-color":"#F97316"},fg);se("stop",{"offset":"100%","stop-color":"#FCD34D","stop-opacity":"0"},fg);
+  const ag=se("linearGradient",{id:"ash",x1:"0",y1:"0",x2:"1",y2:"0"},df);
+  se("stop",{"offset":"0%","stop-color":"#444","stop-opacity":".9"},ag);se("stop",{"offset":"100%","stop-color":"#888","stop-opacity":".5"},ag);
+  se("ellipse",{cx:170,cy:60,rx:88,ry:16,fill:"#4a4a4a",stroke:"#222","stroke-width":"2"},svg);
+  se("rect",{x:83,y:59,width:174,height:88,fill:"#3d3d3d",stroke:"#222","stroke-width":"2"},svg);
+  se("ellipse",{cx:170,cy:147,rx:88,ry:16,fill:"#333",stroke:"#222","stroke-width":"2"},svg);
+  [[118,147,104,195],[170,149,170,195],[222,147,236,195]].forEach(([x1,y1,x2,y2])=>se("line",{x1,y1,x2,y2,stroke:"#555","stroke-width":"5","stroke-linecap":"round"},svg));
+  se("rect",{x:91,y:154,width:158,height:7,rx:"2",fill:"#555"},svg);
+  [100,116,132,148,164,180,196,212,228].forEach(x=>se("line",{x1:x,y1:154,x2:x,y2:161,stroke:"#777","stroke-width":"1.5"},svg));
+  // Só as 7 primeiras camadas cabem na churrasqueira (0-95cm)
+  const BBQ_LY=LY.slice(0,7);
+  BBQ_LY.forEach((l,i)=>{
+    const x=126,y=64+i*11,w=88,h=10,burned=i<bS,burning=i===bS-1&&bR;
+    se("rect",{x,y,width:w,height:h,fill:burned?"#1a0800":l.c,stroke:"rgba(0,0,0,0.2)","stroke-width":"0.4"},svg);
+    if(burned)se("rect",{x,y,width:w,height:h,fill:"url(#ash)",opacity:".6"},svg);
+    if(burning)se("rect",{x,y,width:w,height:h,fill:"url(#fire)",opacity:".9"},svg);
+    st(l.cm.split("–")[0]+"cm",{x:x-3,y:y+8,"text-anchor":"end","font-size":"6.5",fill:"#888"},svg);
+  });
+  if(bR&&bS<BBQ_LY.length)[0,1,2,3,4,5].forEach(j=>{const ft=se("text",{x:132+j*13,y:64+bS*11-5-(j%3)*4,"font-size":j%2===0?13:9},svg);ft.textContent="🔥";});
+  if(bS>=BBQ_LY.length)st("✓ Análise concluída",{x:170,y:108,"text-anchor":"middle","font-size":"11",fill:"#FCD34D","font-weight":"700"},svg);
+  if(bS>0){const c=BBQ_LY[Math.min(bS-1,BBQ_LY.length-1)];se("rect",{x:228,y:65,width:98,height:55,rx:"7",fill:"rgba(10,5,0,0.92)"},svg);st("TEMPERATURA",{x:277,y:82,"text-anchor":"middle","font-size":"8",fill:"#F97316","letter-spacing":"1"},svg);st(c.t,{x:277,y:103,"text-anchor":"middle","font-size":"20",fill:"#FCD34D","font-weight":"700"},svg);st(c.cm+" cm",{x:277,y:115,"text-anchor":"middle","font-size":"7.5",fill:"#888"},svg);}
+  st("Queima controlada · cores a cada 5cm na churrasqueira",{x:170,y:219,"text-anchor":"middle","font-size":"9",fill:"#bbb"},svg);
+  document.getElementById("bfill").style.width=(bS/7*100)+"%";
+  const bi=document.getElementById("binfo");
+  if(bS>0&&bS<=7){const c=BBQ_LY[Math.min(bS-1,6)];bi.style.display="flex";document.getElementById("bbn").textContent=c.n;document.getElementById("bbd").textContent=c.cm+" cm · MO: "+c.mo;const bf=document.getElementById("bbf");bf.textContent=c.f;bf.style.background=FC[c.f]+"22";bf.style.color=FC[c.f];}else bi.style.display="none";
+  const btn=document.getElementById("bbtn");
+  if(bS>=7){btn.textContent="↺ Repetir";btn.style.background="#166534";}
+  else if(bR){btn.textContent="⏸ Pausar";btn.style.background="#DC2626";}
+  else{btn.textContent=bS>0?"▶ Continuar":"▶ Iniciar Queima";btn.style.background="#C84B11";}
+}
+function bbqT(){if(bS>=7){bbqR();return;}bR=!bR;if(bR){bTm=setInterval(()=>{bS++;dB();if(bS>=7){clearInterval(bTm);bR=false;dB();}},700);}else{clearInterval(bTm);dB();}}
+function bbqR(){clearInterval(bTm);bS=0;bR=false;dB();}
+
+// ══ FIELD ══
+let fTk=0,fTm=null;
+function dF(){
+  const svg=document.getElementById("s-f");svg.innerHTML="";
+  const pulse=fTk%6,txOn=fTk%4<2;
+  const tA=(28.4+Math.sin(fTk*.18)*1.3).toFixed(1),um=Math.round(68+Math.cos(fTk*.14)*4),sT2=(24.1+Math.sin(fTk*.09)*.9).toFixed(1),lc=(82+Math.sin(fTk*.06)*5).toFixed(0);
+  const TR=[{x:78,y:118},{x:178,y:72},{x:178,y:162}],ST={x:128,y:118};
+  se("rect",{x:18,y:28,width:204,height:214,rx:"10",fill:"#E8D5B0",stroke:"#C4A882","stroke-width":"1.5"},svg);
+  [[30,40],[55,35],[88,48],[38,208],[72,220],[115,213],[160,42],[192,202],[42,143],[190,63]].forEach(([x,y])=>{se("circle",{cx:x,cy:y,r:"5",fill:"#86EFAC",opacity:".7"},svg);se("circle",{cx:x+2,cy:y-3,r:"3",fill:"#4ADE80",opacity:".6"},svg);});
+  [1,2,3].forEach(r=>se("circle",{cx:ST.x,cy:ST.y,r:r*30,fill:"none",stroke:"#0369A1","stroke-width":pulse===r?2:.8,opacity:pulse===r?.65:.18,"stroke-dasharray":"5 3"},svg));
+  TR.forEach(t=>se("line",{x1:ST.x,y1:ST.y,x2:t.x,y2:t.y,stroke:"#0369A1","stroke-width":"1.2","stroke-dasharray":"5 3",opacity:".5"},svg));
+  se("polygon",{points:TR.map(t=>t.x+","+t.y).join(" "),fill:"rgba(200,75,17,0.07)",stroke:"#C84B11","stroke-width":"1","stroke-dasharray":"6 3"},svg);
+  TR.forEach((t,i)=>{
+    se("rect",{x:t.x-17,y:t.y-17,width:34,height:34,rx:"3",fill:"#4A2000",stroke:"#C84B11","stroke-width":"2"},svg);
+    [0,1,2,3,4].forEach(j=>se("rect",{x:t.x-13,y:t.y-13+j*6,width:26,height:5.5,fill:LY[j*2].c,opacity:".85"},svg));
+    st("T"+(i+1),{x:t.x,y:t.y-22,"text-anchor":"middle","font-size":"10",fill:"#C84B11","font-weight":"800"},svg);
+    se("line",{x1:t.x+19,y1:t.y-15,x2:t.x+19,y2:t.y+15,stroke:"#D97706","stroke-width":"2","stroke-linecap":"round"},svg);
+    se("circle",{cx:t.x+19,cy:t.y-15,r:"3.5",fill:"#D97706"},svg);
+    se("circle",{cx:t.x+19,cy:t.y,r:"2.5",fill:"#FCD34D"},svg);
+    se("circle",{cx:t.x+19,cy:t.y+10,r:"2.5",fill:"#FCD34D"},svg);
+  });
+  se("line",{x1:ST.x,y1:ST.y+20,x2:ST.x,y2:ST.y-38,stroke:"#555","stroke-width":"3"},svg);
+  se("line",{x1:ST.x-10,y1:ST.y-32,x2:ST.x+10,y2:ST.y-32,stroke:"#555","stroke-width":"2"},svg);
+  se("rect",{x:ST.x-14,y:ST.y-16,width:28,height:38,rx:"4",fill:"#0369A1",stroke:"#fff","stroke-width":"2"},svg);
+  const fem=se("text",{x:ST.x,y:ST.y+4,"text-anchor":"middle","font-size":"14"},svg);fem.textContent="📡";
+  st("EST-01",{x:ST.x,y:ST.y+28,"text-anchor":"middle","font-size":"7.5",fill:"#0369A1","font-weight":"700"},svg);
+  se("circle",{cx:ST.x+12,cy:ST.y-12,r:"4",fill:txOn?"#22C55E":"#fff",stroke:"#22C55E","stroke-width":"1.5"},svg);
+  se("rect",{x:232,y:28,width:100,height:150,rx:"9",fill:"#fff",stroke:"#0369A1","stroke-width":"1.5"},svg);
+  se("rect",{x:232,y:28,width:100,height:26,rx:"9",fill:"#0369A1"},svg);se("rect",{x:232,y:42,width:100,height:12,fill:"#0369A1"},svg);
+  st("DADOS AO VIVO",{x:282,y:45,"text-anchor":"middle","font-size":"8",fill:"#fff","font-weight":"700"},svg);
+  [["🌡 Temp. ar",tA+" °C","#C84B11"],["💧 Umidade",um+" %","#0369A1"],["🌱 T. solo",sT2+" °C","#D97706"],["〰 Lençol","−"+lc+"cm","#7C3AED"],["📶 Wi-Fi",txOn?"TX ●":"TX ○",txOn?"#22C55E":"#aaa"],["☁ Firebase","✓ OK","#166534"]].forEach(([k,v,vc],i)=>{st(k,{x:240,y:72+i*18,"font-size":"8",fill:"#888"},svg);st(v,{x:328,y:72+i*18,"text-anchor":"end","font-size":"9.5",fill:vc,"font-weight":"700"},svg);if(i<5)se("line",{x1:238,y1:76+i*18,x2:330,y2:76+i*18,stroke:"#F0EDE8","stroke-width":".5"},svg);});
+  st("3 réplicas em triângulo · estação ao centro",{x:170,y:268,"text-anchor":"middle","font-size":"9",fill:"#bbb"},svg);
+}
+function startF(){if(fTm)return;fTm=setInterval(()=>{fTk++;if(cur==="field")dF();},500);}
+
+// ══ PROJETO ══
+const ART_DEF=[
+  {num:1,cor:"#0369A1",titulo:"Mapeamento geoespacial e estimativa de estoque de carbono das turfeiras do Pantanal norte-mato-grossense",revista:"Global Change Biology · Earth System Science Data",resumo:"Primeiro inventário geoespacial com Sentinel-2, SRTM e MapBiomas validado em campo por GPS RTK. Extensão, espessura e estoque de carbono orgânico por unidade de paisagem."},
+  {num:2,cor:"#78350F",titulo:"Caracterização física, química e ecológica dos perfis de turfeiras da ESEC Taiama, Pantanal",revista:"Geoderma · Catena · Science of the Total Environment",resumo:"Perfis 0–200 cm a cada 5 cm: MO, TOC, pH, granulometria, densidade. Turfeiras profundas (>120 cm) como assinatura paleoclimática."},
+  {num:3,cor:"#C84B11",titulo:"Potencial e dinâmica da queima subterrânea em turfeiras tropicais: índice IVQS para o Pantanal",revista:"Fire · International Journal of Wildland Fire · Combustion and Flame",resumo:"TGA/DSC, bomba calorimétrica, ensaios em churrasqueira com cores de 5 cm. Primeiro protocolo IVQS para solos orgânicos tropicais."},
+  {num:4,cor:"#166534",titulo:"Emissões de CO₂ e CH₄ em turfeiras e ATTZs do Pantanal: efeitos do fogo e da hidrodinâmica",revista:"Global Change Biology · Nature Climate Change · Global Biogeochemical Cycles",resumo:"Câmaras estáticas em 27 pontos. Turfeiras × ATTZs no gradiente hidrológico seco/chuvoso. Balanço de carbono regional em cenários de seca extrema."},
+];
+
+function renderArtCards(arts){
+  const c=document.getElementById("art-cards");
+  c.innerHTML="";
+  arts.forEach((a,i)=>{
+    const div=document.createElement("div");
+    div.className="acard";
+    div.style.marginBottom="8px";
+    div.innerHTML=`
+      <div class="atop">
+        <div class="anum" style="background:${a.cor}">${a.num}</div>
+        <div style="flex:1">
+          <div class="fl" style="margin-top:0">Título do Artigo ${a.num}</div>
+          <textarea class="ff" id="at-titulo-${i}" style="min-height:60px;font-size:12px">${a.titulo||""}</textarea>
+          <div class="fl">Revista-alvo</div>
+          <input class="ff" id="at-revista-${i}" value="${a.revista||""}" style="font-size:12px">
+          <div class="fl">Resumo / Abordagem</div>
+          <textarea class="ff" id="at-resumo-${i}" style="min-height:70px;font-size:12px">${a.resumo||""}</textarea>
+        </div>
+      </div>`;
+    c.appendChild(div);
+  });
+}
+
+const DEF={titulo:"Chamas no Paraíso: turfeiras do Pantanal sob fogo, seca e mudanças climáticas",cand:"Daiana Ferreira Dias",ori:"Prof. Dr. Ernandes Sobreira Oliveira Junior",prog:"PPGCA – Ciências Ambientais · UNEMAT · Campus Cáceres-MT",area:"Pantanal Norte-Mato-Grossense — ESEC Taiama e entorno, Cáceres-MT",prob:"O Pantanal abriga extensas áreas de solo orgânico acumulado ao longo de séculos — as turfeiras — ainda pouco mapeadas, caracterizadas e monitoradas. Com o avanço das secas extremas e dos incêndios, essas turfeiras tornam-se vulneráveis à combustão subterrânea (smouldering), um processo silencioso que consome horizontes inteiros de matéria orgânica e libera carbono estocado por centenas de anos. Simultaneamente, em condições de inundação, essas mesmas zonas úmidas são fontes expressivas de CH4 e CO2. O paradoxo fogo-água das turfeiras pantaneiras permanece sem investigação sistemática.",just:"O Brasil não possui um inventário geoespacial de turfeiras no Pantanal. A caracterização física, química e ecológica dessas formações é praticamente inexistente na literatura nacional. O potencial de queima subterrânea (IVQS) nunca foi determinado para solos orgânicos pantaneiros. O papel das turfeiras nas emissões de GEE em interação com as ATTZs é completamente desconhecido. Este projeto preenche todas essas lacunas de forma integrada, com potencial de publicação em periódicos de altíssimo impacto global.",perg:"Onde estão as turfeiras do Pantanal, qual o seu estado de conservação, quão vulneráveis são ao fogo subterrâneo, e qual o seu papel nas emissões de GEE em interação com as zonas úmidas de transição?",objg:"Mapear, caracterizar e avaliar a vulnerabilidade ao fogo subterrâneo e o papel nas emissões de gases de efeito estufa das turfeiras do Pantanal norte-mato-grossense, integrando análise geoespacial, ecologia de solo, combustão experimental e biogeoquímica de zonas úmidas.",obje:"O1 — Mapear a distribuição geoespacial das turfeiras no Pantanal norte-mato-grossense por sensoriamento remoto e validação em campo.\n\nO2 — Caracterizar os perfis verticais (0–200 cm, a cada 5 cm) das turfeiras da ESEC Taiama: MO, TOC, pH, carbono e granulometria.\n\nO3 — Determinar o potencial e velocidade de queima subterrânea por horizonte de solo, calculando o IVQS e temperaturas de ignição por TGA e calorimetria.\n\nO4 — Quantificar emissões de CO2 e CH4 das turfeiras e ATTZs em diferentes condições hidrológicas e de perturbação por fogo.",delin:"Delineamento em blocos casualizados: 3 zonas (Queimada, Controle, Campo Novo) × 3 réplicas = 9 trincheiras 1×1×1 m. Coleta estratificada a cada 5 cm (0–50 cm = 90 amostras). 3 estações meteorológicas Wi-Fi/Firebase. Câmaras de fluxo GEE em 27 pontos. SR com Sentinel-2, SRTM e MapBiomas.",camp:"Duas campanhas anuais (seca jul–set; cheia fev–mar) por 3 anos. Cores com trado Eijkelkamp Ø5cm × 50cm. Medição in situ T° e umidade a cada 5cm. Câmaras de fluxo estáticas para GEE. GPS RTK de alta precisão.",lab:"LOI 550°C para MO. TOC por analisador elementar. TGA/DSC: T° ignição e energia ativação (Coats-Redfern). Bomba calorimétrica ASTM D240. Coluna PVC com termopares tipo K. GC-FID para CH4, GC-TCD para CO2. pH, condutividade, granulometria (pipeta).",estat:"Mann-Kendall para tendências. ANOVA (zona × profundidade). Regressão múltipla IVQS vs. variáveis ambientais. PCA para classificação dos perfis. Kriging para interpolação espacial. Modelos mistos (R/lme4) para GEE.",hip:"H1 — Turfeiras ocorrem em 8–12% da ESEC Taiama, em cotas mais baixas com maior inundação.\nH2 — Horizontes 0–25 cm nas zonas queimadas terão IVQS maior e T° ignição < 300°C.\nH3 — Velocidade de queima controlada pela umidade, limiar crítico 35–45%.\nH4 — Turfeiras em interface com ATTZs emitem 2× mais CH4 que campos adjacentes.",res:"Artigo 1 — Primeiro mapa de turfeiras do Pantanal com estoque de C (GCB / ESSD)\nArtigo 2 — Caracterização dos perfis de turfeiras pantaneiras (Geoderma / Catena)\nArtigo 3 — Protocolo IVQS para solos orgânicos tropicais (Fire / IJW Fire)\nArtigo 4 — Fluxos GEE turfeiras × ATTZs (GCB / Nature Climate Change)",imp:"Primeiro inventário de turfeiras do Pantanal. Primeiro IVQS tropical. Dados inéditos de GEE de zonas úmidas pantaneiras. Rede de monitoramento permanente para ICMBio/ESEC Taiama. Subsídios para manejo do fogo no maior wetland tropical do mundo."};
+const PK=["titulo","cand","ori","prog","area","prob","just","perg","objg","obje","delin","camp","lab","estat","hip","res","imp"];
+
+function fill(d){
+  PK.forEach(k=>{const e=document.getElementById("pj-"+k);if(e&&d[k]!==undefined)e.value=d[k];});
+  const th=document.getElementById("art-proj-titulo");
+  if(th&&d.titulo) th.textContent=d.titulo;
+}
+function tS(id){const b=document.getElementById(id),a=document.getElementById("a-"+id);const op=b.style.display!=="none";b.style.display=op?"none":"block";a.textContent=op?"▶":"▼";}
+
+// ══ RESULTADOS ══
+// Dados reais do experimento (Resumo_geral-1.xlsx)
+// Estrutura: Tratamento, Réplica, Condição, Medição (data), + variáveis numéricas
+const RES_INITIAL_DATA=[{"Tratamento":"T1","Réplica":1,"Condição":"Solo sem água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.0859,"CO₂ média (mg m⁻²dia⁻¹)":3330.3291},{"Tratamento":"T1","Réplica":2,"Condição":"Solo sem água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.1016,"CO₂ média (mg m⁻²dia⁻¹)":4338.8711},{"Tratamento":"T1","Réplica":3,"Condição":"Solo sem água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.1913,"CO₂ média (mg m⁻²dia⁻¹)":3525.064},{"Tratamento":"T2","Réplica":1,"Condição":"Solo 2L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.3821,"CO₂ média (mg m⁻²dia⁻¹)":2028.9357},{"Tratamento":"T2","Réplica":2,"Condição":"Solo 2L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.0722,"CO₂ média (mg m⁻²dia⁻¹)":2299.4766},{"Tratamento":"T2","Réplica":3,"Condição":"Solo 2L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.2271,"CO₂ média (mg m⁻²dia⁻¹)":457.6401},{"Tratamento":"T3","Réplica":1,"Condição":"Solo 3L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.1348,"CO₂ média (mg m⁻²dia⁻¹)":3324.1668},{"Tratamento":"T3","Réplica":2,"Condição":"Solo 3L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":-0.2702,"CO₂ média (mg m⁻²dia⁻¹)":-1097.5704},{"Tratamento":"T3","Réplica":3,"Condição":"Solo 3L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.1954,"CO₂ média (mg m⁻²dia⁻¹)":667.2631},{"Tratamento":"T4","Réplica":1,"Condição":"Solo 6L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":-0.3413,"CO₂ média (mg m⁻²dia⁻¹)":4836.209},{"Tratamento":"T4","Réplica":2,"Condição":"Solo 6L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":0.1531,"CO₂ média (mg m⁻²dia⁻¹)":509.0215},{"Tratamento":"T4","Réplica":3,"Condição":"Solo 6L água","Medição":"2026-04-08","CH₄ média (mg m⁻²dia⁻¹)":-0.1451,"CO₂ média (mg m⁻²dia⁻¹)":3099.2765},{"Tratamento":"T1","Réplica":1,"Condição":"Solo sem água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.6601,"CO₂ média (mg m⁻²dia⁻¹)":4326.5182},{"Tratamento":"T1","Réplica":2,"Condição":"Solo sem água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.4067,"CO₂ média (mg m⁻²dia⁻¹)":3848.9144},{"Tratamento":"T1","Réplica":3,"Condição":"Solo sem água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.431,"CO₂ média (mg m⁻²dia⁻¹)":2253.0612},{"Tratamento":"T2","Réplica":1,"Condição":"Solo 2L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.1915,"CO₂ média (mg m⁻²dia⁻¹)":6092.6571},{"Tratamento":"T2","Réplica":2,"Condição":"Solo 2L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":1.9888,"CO₂ média (mg m⁻²dia⁻¹)":11861.5014},{"Tratamento":"T2","Réplica":3,"Condição":"Solo 2L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.8877,"CO₂ média (mg m⁻²dia⁻¹)":2870.0946},{"Tratamento":"T3","Réplica":1,"Condição":"Solo 3L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":6.213,"CO₂ média (mg m⁻²dia⁻¹)":16099.1528},{"Tratamento":"T3","Réplica":2,"Condição":"Solo 3L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":1.674,"CO₂ média (mg m⁻²dia⁻¹)":5696.3211},{"Tratamento":"T3","Réplica":3,"Condição":"Solo 3L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":2.0002,"CO₂ média (mg m⁻²dia⁻¹)":9051.9206},{"Tratamento":"T4","Réplica":1,"Condição":"Solo 6L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.4615,"CO₂ média (mg m⁻²dia⁻¹)":4761.7905},{"Tratamento":"T4","Réplica":2,"Condição":"Solo 6L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":0.319,"CO₂ média (mg m⁻²dia⁻¹)":4258.0404},{"Tratamento":"T4","Réplica":3,"Condição":"Solo 6L água","Medição":"2026-04-09","CH₄ média (mg m⁻²dia⁻¹)":3.3208,"CO₂ média (mg m⁻²dia⁻¹)":9986.3945},{"Tratamento":"T1","Réplica":1,"Condição":"Solo sem água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.157,"CO₂ média (mg m⁻²dia⁻¹)":620.2135},{"Tratamento":"T1","Réplica":2,"Condição":"Solo sem água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.5257,"CO₂ média (mg m⁻²dia⁻¹)":988.8389},{"Tratamento":"T1","Réplica":3,"Condição":"Solo sem água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.1003,"CO₂ média (mg m⁻²dia⁻¹)":608.5569},{"Tratamento":"T2","Réplica":1,"Condição":"Solo 2L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":1.3314,"CO₂ média (mg m⁻²dia⁻¹)":8105.8164},{"Tratamento":"T2","Réplica":2,"Condição":"Solo 2L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.9389,"CO₂ média (mg m⁻²dia⁻¹)":9702.7662},{"Tratamento":"T2","Réplica":3,"Condição":"Solo 2L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":-0.0801,"CO₂ média (mg m⁻²dia⁻¹)":2884.7386},{"Tratamento":"T3","Réplica":1,"Condição":"Solo 3L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.102,"CO₂ média (mg m⁻²dia⁻¹)":4947.313},{"Tratamento":"T3","Réplica":2,"Condição":"Solo 3L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":-0.1432,"CO₂ média (mg m⁻²dia⁻¹)":2355.7444},{"Tratamento":"T3","Réplica":3,"Condição":"Solo 3L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.4984,"CO₂ média (mg m⁻²dia⁻¹)":2134.7908},{"Tratamento":"T4","Réplica":1,"Condição":"Solo 6L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.022,"CO₂ média (mg m⁻²dia⁻¹)":5712.2991},{"Tratamento":"T4","Réplica":2,"Condição":"Solo 6L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.3455,"CO₂ média (mg m⁻²dia⁻¹)":2762.5176},{"Tratamento":"T4","Réplica":3,"Condição":"Solo 6L água","Medição":"2026-04-13","CH₄ média (mg m⁻²dia⁻¹)":0.781,"CO₂ média (mg m⁻²dia⁻¹)":4607.096},{"Tratamento":"T1","Réplica":1,"Condição":"Solo sem água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.3736,"CO₂ média (mg m⁻²dia⁻¹)":3397.5571},{"Tratamento":"T1","Réplica":2,"Condição":"Solo sem água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":-0.299,"CO₂ média (mg m⁻²dia⁻¹)":-1688.2616},{"Tratamento":"T1","Réplica":3,"Condição":"Solo sem água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.4265,"CO₂ média (mg m⁻²dia⁻¹)":2652.2179},{"Tratamento":"T2","Réplica":1,"Condição":"Solo 2L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":-0.0869,"CO₂ média (mg m⁻²dia⁻¹)":3328.2202},{"Tratamento":"T2","Réplica":2,"Condição":"Solo 2L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":1.9633,"CO₂ média (mg m⁻²dia⁻¹)":13533.5706},{"Tratamento":"T2","Réplica":3,"Condição":"Solo 2L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.0711,"CO₂ média (mg m⁻²dia⁻¹)":4732.7675},{"Tratamento":"T3","Réplica":1,"Condição":"Solo 3L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":-0.0488,"CO₂ média (mg m⁻²dia⁻¹)":5360.1549},{"Tratamento":"T3","Réplica":2,"Condição":"Solo 3L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.3232,"CO₂ média (mg m⁻²dia⁻¹)":4551.9744},{"Tratamento":"T3","Réplica":3,"Condição":"Solo 3L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":1.0143,"CO₂ média (mg m⁻²dia⁻¹)":6897.3649},{"Tratamento":"T4","Réplica":1,"Condição":"Solo 6L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.5201,"CO₂ média (mg m⁻²dia⁻¹)":6035.5979},{"Tratamento":"T4","Réplica":2,"Condição":"Solo 6L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.6529,"CO₂ média (mg m⁻²dia⁻¹)":8673.4034},{"Tratamento":"T4","Réplica":3,"Condição":"Solo 6L água","Medição":"2026-04-16","CH₄ média (mg m⁻²dia⁻¹)":0.8516,"CO₂ média (mg m⁻²dia⁻¹)":4927.8749},{"Tratamento":"T1","Réplica":1,"Condição":"Solo sem água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":0.425,"CO₂ média (mg m⁻²dia⁻¹)":-872.3213},{"Tratamento":"T1","Réplica":2,"Condição":"Solo sem água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":0.8353,"CO₂ média (mg m⁻²dia⁻¹)":6435.6587},{"Tratamento":"T1","Réplica":3,"Condição":"Solo sem água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":0.422,"CO₂ média (mg m⁻²dia⁻¹)":780.4914},{"Tratamento":"T2","Réplica":1,"Condição":"Solo 2L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":1.5795,"CO₂ média (mg m⁻²dia⁻¹)":4212.418},{"Tratamento":"T2","Réplica":2,"Condição":"Solo 2L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":5.8348,"CO₂ média (mg m⁻²dia⁻¹)":340.1674},{"Tratamento":"T2","Réplica":3,"Condição":"Solo 2L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":0.1481,"CO₂ média (mg m⁻²dia⁻¹)":-1104.5577},{"Tratamento":"T3","Réplica":1,"Condição":"Solo 3L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":-26.8774,"CO₂ média (mg m⁻²dia⁻¹)":7955.0874},{"Tratamento":"T3","Réplica":2,"Condição":"Solo 3L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":-226.8348,"CO₂ média (mg m⁻²dia⁻¹)":4294.6618},{"Tratamento":"T3","Réplica":3,"Condição":"Solo 3L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":1.6748,"CO₂ média (mg m⁻²dia⁻¹)":6728.3546},{"Tratamento":"T4","Réplica":1,"Condição":"Solo 6L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":1.3673,"CO₂ média (mg m⁻²dia⁻¹)":941.1667},{"Tratamento":"T4","Réplica":2,"Condição":"Solo 6L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":5.2768,"CO₂ média (mg m⁻²dia⁻¹)":-2172.2485},{"Tratamento":"T4","Réplica":3,"Condição":"Solo 6L água","Medição":"2026-04-22","CH₄ média (mg m⁻²dia⁻¹)":8.5402,"CO₂ média (mg m⁻²dia⁻¹)":9991.1109}];
+
+let resData=[];
+let resVars=[], resDates=[], resTrats=[];
+let resVarSel="", resDatesSel=[], resTratsSel=[];
+let resTab="time";
+let resInited=false;
+
+const RES_TRAT_COLORS={"T1":"#C84B11","T2":"#D97706","T3":"#0369A1","T4":"#166534"};
+
+function initRes(){
+  if(resInited) return;
+  resInited=true;
+  resLoadData(RES_INITIAL_DATA);
+}
+
+function resLoadFile(input){
+  const f=input.files[0];
+  if(!f) return;
+  const msg=document.getElementById("res-load-msg");
+  msg.textContent="Carregando...";
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const name=f.name.toLowerCase();
+      if(name.endsWith(".csv")){
+        const rows=e.target.result.split(/\r?\n/).filter(r=>r.trim());
+        const headers=rows[0].split(/[,;\t]/);
+        const data=rows.slice(1).map(r=>{
+          const vals=r.split(/[,;\t]/);
+          const obj={};
+          headers.forEach((h,i)=>{ const v=vals[i]||""; obj[h.trim()]=isNaN(v)?v.trim():parseFloat(v); });
+          return obj;
+        }).filter(r=>r[headers[0]]);
+        resLoadData(data);
+        msg.textContent="✓ "+data.length+" linhas carregadas de "+f.name;
+      } else {
+        // XLSX via SheetJS
+        const wb=XLSX.read(e.target.result,{type:"array",cellDates:true});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const json=XLSX.utils.sheet_to_json(ws,{raw:false,dateNF:"yyyy-mm-dd"});
+        resLoadData(json);
+        msg.textContent="✓ "+json.length+" linhas carregadas de "+f.name;
+      }
+    }catch(err){msg.textContent="❌ Erro: "+err.message;}
+  };
+  if(f.name.toLowerCase().endsWith(".csv")) reader.readAsText(f,"UTF-8");
+  else reader.readAsArrayBuffer(f);
+}
+
+function resLoadData(data){
+  resData=data.map(r=>{
+    const nr={};
+    Object.keys(r).forEach(k=>{ const v=r[k]; nr[k.trim()]=typeof v==="string"?v.trim():v; });
+    return nr;
+  });
+  // Detectar colunas
+  const cols=Object.keys(resData[0]||{});
+  const nonNum=["Tratamento","Réplica","Condição","Medição","Replica","Condicao","Medicao","Date","Data"];
+  resVars=cols.filter(c=>!nonNum.includes(c)&&resData.some(r=>typeof parseFloat(r[c])==="number"&&!isNaN(parseFloat(r[c]))));
+  resDates=[...new Set(resData.map(r=>r.Medição||r.Medicao||r.Date||r.Data||""))].filter(Boolean).sort();
+  resTrats=[...new Set(resData.map(r=>r.Tratamento||""))].filter(Boolean).sort();
+  resVarSel=resVars[0]||"";
+  resDatesSel=[...resDates];
+  resTratsSel=[...resTrats];
+  resRenderControls();
+  document.getElementById("res-controls").style.display="block";
+  resUpdate();
+}
+
+function resRenderControls(){
+  // Variáveis
+  const vb=document.getElementById("res-var-btns"); vb.innerHTML="";
+  resVars.forEach(v=>{
+    const b=document.createElement("button");
+    const sel=v===resVarSel;
+    b.style.cssText=`padding:4px 10px;border-radius:12px;border:2px solid #0369A1;
+      background:${sel?"#0369A1":"#fff"};color:${sel?"#fff":"#0369A1"};
+      font-size:9.5px;font-weight:700;cursor:pointer;font-family:system-ui;white-space:nowrap;transition:all .15s`;
+    b.textContent=v.length>25?v.substring(0,25)+"…":v;
+    b.title=v;
+    b.onclick=()=>{resVarSel=v;resRenderControls();resUpdate();};
+    vb.appendChild(b);
+  });
+  // Datas
+  const db=document.getElementById("res-date-btns"); db.innerHTML="";
+  resDates.forEach(d=>{
+    const sel=resDatesSel.includes(d);
+    const b=document.createElement("button");
+    const disp=d.includes("-")?d.split("-").reverse().join("/"):d;
+    b.style.cssText=`padding:3px 8px;border-radius:10px;border:1.5px solid #7C3AED;
+      background:${sel?"#7C3AED":"#fff"};color:${sel?"#fff":"#7C3AED"};
+      font-size:9px;font-weight:700;cursor:pointer;font-family:system-ui;transition:all .15s`;
+    b.textContent=disp;
+    b.onclick=()=>{
+      if(resDatesSel.includes(d)) resDatesSel=resDatesSel.filter(x=>x!==d);
+      else resDatesSel.push(d);
+      resRenderControls(); resUpdate();
+    };
+    db.appendChild(b);
+  });
+  // Tratamentos
+  const tb=document.getElementById("res-trat-btns"); tb.innerHTML="";
+  resTrats.forEach(t=>{
+    const sel=resTratsSel.includes(t);
+    const cor=RES_TRAT_COLORS[t]||"#555";
+    const b=document.createElement("button");
+    b.style.cssText=`padding:3px 10px;border-radius:10px;border:1.5px solid ${cor};
+      background:${sel?cor:"#fff"};color:${sel?"#fff":cor};
+      font-size:9.5px;font-weight:700;cursor:pointer;font-family:system-ui;transition:all .15s`;
+    b.textContent=t;
+    b.onclick=()=>{
+      if(resTratsSel.includes(t)) resTratsSel=resTratsSel.filter(x=>x!==t);
+      else resTratsSel.push(t);
+      resRenderControls(); resUpdate();
+    };
+    tb.appendChild(b);
+  });
+  // Selects de regressão
+  const rx=document.getElementById("res-reg-x");
+  const ry=document.getElementById("res-reg-y");
+  if(rx&&ry){
+    const prevX=rx.value, prevY=ry.value;
+    rx.innerHTML=""; ry.innerHTML="";
+    resVars.forEach(v=>{
+      rx.innerHTML+=`<option value="${v}">${v.length>30?v.substring(0,30)+"…":v}</option>`;
+      ry.innerHTML+=`<option value="${v}">${v.length>30?v.substring(0,30)+"…":v}</option>`;
+    });
+    if(prevX) rx.value=prevX;
+    if(prevY&&prevY!==rx.value) ry.value=prevY;
+    else if(resVars.length>1) ry.value=resVars[1];
+  }
+}
+
+function resSetTab(t){
+  resTab=t;
+  ["time","comp","stat","reg"].forEach(id=>{
+    const panel=document.getElementById("res-panel-"+id);
+    const btn=document.getElementById("res-tab-"+id);
+    if(panel) panel.style.display=id===t?"block":"none";
+    if(btn){ btn.style.background=id===t?"#0369A1":"#fff"; btn.style.color=id===t?"#fff":"#0369A1"; }
+  });
+  resUpdate();
+}
+
+function resUpdate(){
+  if(resTab==="time") resDrawTime();
+  else if(resTab==="comp") resDrawComp();
+  else if(resTab==="stat") resDrawStat();
+  else if(resTab==="reg") resDrawReg();
+}
+
+// Filtra dados pelos seletores ativos
+function resFiltered(){
+  return resData.filter(r=>{
+    const d=r.Medição||r.Medicao||r.Date||r.Data||"";
+    const t=r.Tratamento||"";
+    return resDatesSel.includes(d) && resTratsSel.includes(t);
+  });
+}
+
+// Média por grupo
+function resMean(arr){ return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0; }
+function resStd(arr){
+  if(arr.length<2) return 0;
+  const m=resMean(arr);
+  return Math.sqrt(arr.map(x=>(x-m)**2).reduce((a,b)=>a+b,0)/(arr.length-1));
+}
+
+function resSVGel(tag,attrs,parent,NS="http://www.w3.org/2000/svg"){
+  const e=document.createElementNS(NS,tag);
+  if(attrs) Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function resTxt(t,a,p){const e=resSVGel("text",a,p);e.textContent=t;return e;}
+
+// ── GRÁFICO TEMPORAL ──
+function resDrawTime(){
+  const svg=document.getElementById("res-chart-time");
+  const title=document.getElementById("res-time-title");
+  const legend=document.getElementById("res-time-legend");
+  if(!svg||!resVarSel) return;
+  svg.innerHTML="";
+  title.textContent=resVarSel+" por tratamento ao longo do tempo";
+
+  const W=340,H=160,pL=38,pR=12,pT=12,pB=24;
+  const cW=W-pL-pR, cH=H-pT-pB;
+
+  // Calcular médias por trat×data
+  const sortedDates=resDatesSel.filter(d=>resDates.includes(d)).sort();
+  const allVals=[];
+  resTratsSel.forEach(t=>sortedDates.forEach(d=>{
+    const vals=resData.filter(r=>(r.Tratamento===t)&&(r.Medição===d||r.Medicao===d||r.Date===d||r.Data===d))
+      .map(r=>parseFloat(r[resVarSel])).filter(v=>!isNaN(v));
+    if(vals.length) allVals.push(...vals);
+  }));
+  if(!allVals.length){resTxt("Sem dados para exibir",{x:W/2,y:H/2,"text-anchor":"middle","font-size":"12","fill":"#aaa"},svg);return;}
+  const vMin=Math.min(...allVals), vMax=Math.max(...allVals);
+  const vRange=vMax-vMin||1;
+
+  // Grade
+  [0,.25,.5,.75,1].forEach(r=>{
+    const y=pT+cH*(1-r);
+    resSVGel("line",{x1:pL,y1:y,x2:W-pR,y2:y,stroke:"#F0EDE8","stroke-width":"0.8"},svg);
+    const v=(vMin+vRange*r).toFixed(vRange>100?0:2);
+    resTxt(v,{x:pL-3,y:y+3.5,"text-anchor":"end","font-size":"7","fill":"#aaa"},svg);
+  });
+
+  // Linhas por tratamento
+  resTratsSel.forEach(t=>{
+    const cor=RES_TRAT_COLORS[t]||"#888";
+    const pts=[];
+    sortedDates.forEach((d,di)=>{
+      const vals=resData.filter(r=>(r.Tratamento===t)&&(r.Medição===d||r.Medicao===d||r.Date===d||r.Data===d))
+        .map(r=>parseFloat(r[resVarSel])).filter(v=>!isNaN(v));
+      if(!vals.length) return;
+      const mean=resMean(vals);
+      const x=pL+(di/(sortedDates.length-1||1))*cW;
+      const y=pT+cH*(1-(mean-vMin)/vRange);
+      pts.push({x,y,mean,std:resStd(vals)});
+    });
+    if(pts.length<1) return;
+    if(pts.length>1){
+      const path=resSVGel("polyline",{
+        points:pts.map(p=>p.x+","+p.y).join(" "),
+        fill:"none",stroke:cor,"stroke-width":"2","stroke-linecap":"round","stroke-linejoin":"round"
+      },svg);
+    }
+    // Pontos + barras de erro
+    pts.forEach(p=>{
+      const errH=Math.min((p.std/vRange)*cH, cH*0.3);
+      if(errH>1){
+        resSVGel("line",{x1:p.x,y1:p.y-errH,x2:p.x,y2:p.y+errH,stroke:cor,"stroke-width":"1.5","opacity":"0.5"},svg);
+        resSVGel("line",{x1:p.x-3,y1:p.y-errH,x2:p.x+3,y2:p.y-errH,stroke:cor,"stroke-width":"1"},svg);
+        resSVGel("line",{x1:p.x-3,y1:p.y+errH,x2:p.x+3,y2:p.y+errH,stroke:cor,"stroke-width":"1"},svg);
+      }
+      resSVGel("circle",{cx:p.x,cy:p.y,r:"4",fill:cor,"stroke":"#fff","stroke-width":"1.5"},svg);
+    });
+  });
+  // Eixo X (datas)
+  sortedDates.forEach((d,di)=>{
+    const x=pL+(di/(sortedDates.length-1||1))*cW;
+    const disp=d.includes("-")?d.split("-").reverse().slice(0,2).join("/"):d;
+    resTxt(disp,{x,y:H-5,"text-anchor":"middle","font-size":"7","fill":"#aaa"},svg);
+  });
+  // Legenda
+  legend.innerHTML="";
+  resTratsSel.forEach(t=>{
+    const cond=(resData.find(r=>r.Tratamento===t)||{}).Condição||(resData.find(r=>r.Tratamento===t)||{}).Condicao||t;
+    const el=document.createElement("div");
+    el.style.cssText="display:flex;align-items:center;gap:4px;font-size:9.5px;color:#555";
+    el.innerHTML=`<div style="width:16px;height:3px;background:${RES_TRAT_COLORS[t]||"#888"};border-radius:2px"></div><strong>${t}</strong> ${cond}`;
+    legend.appendChild(el);
+  });
+}
+
+// ── GRÁFICO COMPARATIVO (barras com erro) ──
+function resDrawComp(){
+  const svg=document.getElementById("res-chart-comp");
+  if(!svg||!resVarSel) return;
+  svg.innerHTML="";
+  const W=340,H=180,pL=40,pR=12,pT=14,pB=36;
+  const cW=W-pL-pR, cH=H-pT-pB;
+
+  const groups=resTratsSel;
+  const bW=Math.min(40, (cW/groups.length)*0.6);
+  const allVals=[];
+  groups.forEach(t=>{
+    const vals=resFiltered().filter(r=>r.Tratamento===t).map(r=>parseFloat(r[resVarSel])).filter(v=>!isNaN(v));
+    if(vals.length) allVals.push(...vals);
+  });
+  if(!allVals.length){resTxt("Sem dados",{x:W/2,y:H/2,"text-anchor":"middle","font-size":"12","fill":"#aaa"},svg);return;}
+  const vMax=Math.max(...allVals,0)*1.12||1;
+  const vMin=Math.min(...allVals,0);
+  const vRange=vMax-vMin||1;
+  const zero=pT+cH*(1-(0-vMin)/vRange);
+
+  // Linha zero
+  resSVGel("line",{x1:pL,y1:zero,x2:W-pR,y2:zero,stroke:"#ddd","stroke-width":"1"},svg);
+
+  // Grade
+  [0,.25,.5,.75,1].forEach(r=>{
+    const y=pT+cH*(1-r);
+    resSVGel("line",{x1:pL,y1:y,x2:W-pR,y2:y,stroke:"#F5F0EA","stroke-width":"0.8"},svg);
+    const v=(vMin+vRange*r).toFixed(vRange>100?0:2);
+    resTxt(v,{x:pL-3,y:y+3,"text-anchor":"end","font-size":"7","fill":"#aaa"},svg);
+  });
+
+  groups.forEach((t,gi)=>{
+    const cor=RES_TRAT_COLORS[t]||"#888";
+    const vals=resFiltered().filter(r=>r.Tratamento===t).map(r=>parseFloat(r[resVarSel])).filter(v=>!isNaN(v));
+    if(!vals.length) return;
+    const mean=resMean(vals), std=resStd(vals);
+    const x=pL+(gi+0.5)*(cW/groups.length);
+    const y=pT+cH*(1-(mean-vMin)/vRange);
+    const barH=Math.abs(y-zero);
+    const barY=Math.min(y,zero);
+    resSVGel("rect",{x:x-bW/2,y:barY,width:bW,height:barH||1,fill:cor,rx:"3","opacity":"0.85"},svg);
+    // Barra de erro
+    if(vals.length>1){
+      const errH=Math.min((std/vRange)*cH,cH*0.4);
+      resSVGel("line",{x1:x,y1:y-errH,x2:x,y2:y+errH,stroke:"#333","stroke-width":"1.5"},svg);
+      resSVGel("line",{x1:x-4,y1:y-errH,x2:x+4,y2:y-errH,stroke:"#333","stroke-width":"1.2"},svg);
+      resSVGel("line",{x1:x-4,y1:y+errH,x2:x+4,y2:y+errH,stroke:"#333","stroke-width":"1.2"},svg);
+    }
+    resTxt(mean.toFixed(2),{x,y:y-8,"text-anchor":"middle","font-size":"7.5","fill":cor,"font-weight":"700"},svg);
+    resTxt(t,{x,y:H-pB+14,"text-anchor":"middle","font-size":"9","fill":cor,"font-weight":"700"},svg);
+    const cond=(resData.find(r=>r.Tratamento===t)||{}).Condição||"";
+    resTxt(cond.substring(0,12),{x,y:H-pB+24,"text-anchor":"middle","font-size":"7","fill":"#aaa"},svg);
+  });
+}
+
+// ── ESTATÍSTICA DESCRITIVA ──
+function resDrawStat(){
+  const cont=document.getElementById("res-stat-body");
+  if(!cont||!resVarSel) return;
+  const stats=resTratsSel.map(t=>{
+    const vals=resFiltered().filter(r=>r.Tratamento===t).map(r=>parseFloat(r[resVarSel])).filter(v=>!isNaN(v));
+    if(!vals.length) return null;
+    const sorted=[...vals].sort((a,b)=>a-b);
+    const n=vals.length, mean=resMean(vals), std=resStd(vals);
+    const med=n%2===0?(sorted[n/2-1]+sorted[n/2])/2:sorted[Math.floor(n/2)];
+    const cv=mean!==0?Math.abs(std/mean)*100:0;
+    return {t,n,mean,std,min:sorted[0],max:sorted[n-1],med,cv};
+  }).filter(Boolean);
+
+  const rows=stats.map(s=>`<tr style="border-bottom:1px solid #F5F0EA">
+    <td style="padding:5px 10px;font-weight:700;font-size:11px;color:${RES_TRAT_COLORS[s.t]||"#555"}">${s.t}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.n}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center;font-weight:700">${s.mean.toFixed(2)}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.std.toFixed(2)}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.med.toFixed(2)}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.min.toFixed(2)}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.max.toFixed(2)}</td>
+    <td style="padding:5px 8px;font-size:11px;text-align:center">${s.cv.toFixed(1)}%</td>
+  </tr>`).join("");
+  cont.innerHTML=`<table style="width:100%;border-collapse:collapse">
+    <thead><tr style="background:#F0F9FF">
+      <th style="padding:6px 10px;font-size:9px;color:#0369A1;text-align:left">Tratamento</th>
+      <th style="padding:6px 8px;font-size:9px;color:#555;text-align:center">n</th>
+      <th style="padding:6px 8px;font-size:9px;color:#0369A1;text-align:center">Média</th>
+      <th style="padding:6px 8px;font-size:9px;color:#555;text-align:center">DP</th>
+      <th style="padding:6px 8px;font-size:9px;color:#555;text-align:center">Mediana</th>
+      <th style="padding:6px 8px;font-size:9px;color:#555;text-align:center">Mín</th>
+      <th style="padding:6px 8px;font-size:9px;color:#555;text-align:center">Máx</th>
+      <th style="padding:6px 8px;font-size:9px;color:#DC2626;text-align:center">CV%</th>
+    </tr></thead><tbody>${rows}</tbody>
+  </table>`;
+
+  // Nota interpretativa
+  if(stats.length>=2){
+    const sorted=[...stats].sort((a,b)=>b.mean-a.mean);
+    const note=document.createElement("div");
+    note.style.cssText="padding:8px 12px;background:#FEF3C7;border-radius:0 0 12px 12px;font-size:10.5px;color:#78350F;line-height:1.6";
+    note.innerHTML=`<strong>📝 Nota:</strong> Maior média em <strong>${sorted[0].t}</strong> (${sorted[0].mean.toFixed(2)}) · 
+    Menor em <strong>${sorted[sorted.length-1].t}</strong> (${sorted[sorted.length-1].mean.toFixed(2)}) · 
+    CV alto (>30%) indica alta variabilidade entre réplicas.`;
+    cont.appendChild(note);
+  }
+}
+
+// ── REGRESSÃO LINEAR ──
+function resDrawReg(){
+  const svg=document.getElementById("res-chart-reg");
+  const eq=document.getElementById("res-reg-eq");
+  const rx=document.getElementById("res-reg-x");
+  const ry2=document.getElementById("res-reg-y");
+  if(!svg||!rx||!ry2) return;
+  const xVar=rx.value, yVar=ry2.value;
+  if(!xVar||!yVar||xVar===yVar){
+    svg.innerHTML=""; if(eq) eq.textContent="Selecione duas variáveis diferentes."; return;
+  }
+  svg.innerHTML="";
+  const filtered=resFiltered();
+  const pts=filtered.map(r=>({
+    x:parseFloat(r[xVar]), y:parseFloat(r[yVar]), t:r.Tratamento
+  })).filter(p=>!isNaN(p.x)&&!isNaN(p.y));
+  if(pts.length<3){resTxt("Dados insuficientes para regressão",{x:170,y:100,"text-anchor":"middle","font-size":"11","fill":"#aaa"},svg);return;}
+
+  const W=340,H=200,pL=40,pR=14,pT=14,pB=28;
+  const cW=W-pL-pR, cH=H-pT-pB;
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  const xMin=Math.min(...xs), xMax=Math.max(...xs), xR=xMax-xMin||1;
+  const yMin=Math.min(...ys), yMax=Math.max(...ys), yR=yMax-yMin||1;
+
+  // Grade
+  [0,.25,.5,.75,1].forEach(r=>{
+    const y=pT+cH*(1-r);
+    resSVGel("line",{x1:pL,y1:y,x2:W-pR,y2:y,stroke:"#F0EDE8","stroke-width":"0.8"},svg);
+    resTxt((yMin+yR*r).toFixed(yR>100?0:2),{x:pL-3,y:y+3,"text-anchor":"end","font-size":"7","fill":"#aaa"},svg);
+    const x2=pL+cW*r;
+    resSVGel("line",{x1:x2,y1:pT,x2:x2,y2:pT+cH,stroke:"#F0EDE8","stroke-width":"0.8"},svg);
+    resTxt((xMin+xR*r).toFixed(xR>100?0:2),{x:x2,y:H-pB+12,"text-anchor":"middle","font-size":"7","fill":"#aaa"},svg);
+  });
+
+  // Regressão OLS
+  const n=pts.length;
+  const xM=resMean(xs), yM=resMean(ys);
+  const sxy=pts.reduce((a,p)=>a+(p.x-xM)*(p.y-yM),0);
+  const sxx=pts.reduce((a,p)=>a+(p.x-xM)**2,0);
+  const b=sxx!==0?sxy/sxx:0, a2=yM-b*xM;
+  const ypred=xs.map(x=>a2+b*x);
+  const ss_res=ys.reduce((a,y,i)=>a+(y-ypred[i])**2,0);
+  const ss_tot=ys.reduce((a,y)=>a+(y-yM)**2,0);
+  const r2=ss_tot!==0?1-ss_res/ss_tot:0;
+
+  // Linha de regressão
+  const x1r=pL, y1r=pT+cH*(1-(a2+b*xMin-yMin)/yR);
+  const x2r=W-pR, y2r=pT+cH*(1-(a2+b*xMax-yMin)/yR);
+  resSVGel("line",{x1:x1r,y1:y1r,x2:x2r,y2:y2r,stroke:"#DC2626","stroke-width":"1.8","stroke-dasharray":"5,3"},svg);
+
+  // Pontos
+  pts.forEach(p=>{
+    const cx=pL+(p.x-xMin)/xR*cW;
+    const cy=pT+cH*(1-(p.y-yMin)/yR);
+    resSVGel("circle",{cx,cy,r:"4",fill:RES_TRAT_COLORS[p.t]||"#888","stroke":"#fff","stroke-width":"1.2"},svg);
+  });
+
+  // Equação
+  if(eq){
+    const sign=b>=0?"+":" ";
+    eq.innerHTML=`y = ${a2.toFixed(3)} ${sign} ${b.toFixed(4)} · x &nbsp;&nbsp;|&nbsp;&nbsp; R² = <strong>${r2.toFixed(4)}</strong> &nbsp;&nbsp;|&nbsp;&nbsp; n = ${n} &nbsp;&nbsp;|&nbsp;&nbsp; ${r2>0.7?"✅ Correlação forte":r2>0.4?"⚠️ Correlação moderada":"❌ Correlação fraca"}`;
+  }
+}
+
+function uSw(id,sel){document.querySelectorAll("#sw-"+id+" .swb").forEach((b,i)=>b.classList.toggle("on",i===sel));}
+function bSw(id,fn){const r=document.getElementById("sw-"+id);if(!r)return;r.innerHTML="";LY.forEach((l,i)=>{const b=document.createElement("button");b.className="swb";b.style.background=l.c;b.title=l.n;b.onclick=()=>fn(i);r.appendChild(b);});}
+
+// ══ FIREBASE ══
+const FB={apiKey:"AIzaSyD2W6MC9hg0MQbr4IAIn-YDauV7MHQaVfM",authDomain:"profagua-unemat.firebaseapp.com",databaseURL:"https://profagua-unemat-default-rtdb.firebaseio.com",projectId:"profagua-unemat",storageBucket:"profagua-unemat.firebasestorage.app",messagingSenderId:"563954651220",appId:"1:563954651220:web:89deba47a14541fe06ddc1"};
+let db=null;const ROOT="taiama_daiana";
+function fbst(t,ok=true){const e=document.getElementById("fbst");if(!e)return;e.textContent=t;e.style.background=ok?"#F0FDF4":"#FEF2F2";e.style.color=ok?"#16A34A":"#DC2626";e.style.borderColor=ok?"#BBF7D0":"#FECACA";}
+// Firebase em bloco isolado — erro aqui não quebra o resto
+try{
+  if(typeof firebase!=="undefined"){
+    if(!firebase.apps.length)firebase.initializeApp(FB);
+    db=firebase.database();
+    db.ref(".info/connected").on("value",s=>{
+      if(s.val()){fbst("⬤ Conectado");loadP();loadN();}
+      else fbst("⬤ Offline",false);
+    });
+  } else {
+    fbst("⬤ Offline",false);
+  }
+}catch(e){fbst("⬤ Offline",false);}
+
+function loadP(){
+  if(!db)return;
+  db.ref(ROOT+"/projeto").once("value").then(s=>{
+    const d=s.val();
+    if(d){
+      fill(d);
+      if(d.ts) document.getElementById("pmsg").textContent="Última edição: "+new Date(d.ts).toLocaleString("pt-BR");
+    } else {
+      db.ref(ROOT+"/projeto").set({...DEF,ts:new Date().toISOString()});
+    }
+  });
+  db.ref(ROOT+"/artigos").once("value").then(s=>{
+    const d=s.val();
+    if(d && Array.isArray(d)){
+      renderArtCards(d);
+    }
+  });
+}
+function salvar(){
+  if(!db){alert("Firebase não conectado.");return;}
+  const btn=document.getElementById("psave");btn.disabled=true;
+  document.getElementById("pico").textContent="⏳";
+  const d={ts:new Date().toISOString()};
+  PK.forEach(k=>{d[k]=(document.getElementById("pj-"+k)||{}).value||"";});
+  db.ref(ROOT+"/projeto").set(d).then(()=>{
+    btn.disabled=false;document.getElementById("pico").textContent="✓";
+    document.getElementById("pmsg").textContent="✓ Salvo em "+new Date().toLocaleTimeString("pt-BR");
+    fbst("⬤ Salvo");
+    setTimeout(()=>{document.getElementById("pico").textContent="💾";},2500);
+    // Atualiza título no hero dos artigos
+    document.getElementById("art-proj-titulo").textContent=d.titulo||DEF.titulo;
+  }).catch(e=>{btn.disabled=false;document.getElementById("pico").textContent="❌";document.getElementById("pmsg").textContent=e.message;});
+}
+function salvarArt(){
+  if(!db){alert("Firebase não conectado.");return;}
+  document.getElementById("art-ico").textContent="⏳";
+  const arts=ART_DEF.map((a,i)=>({
+    num:a.num,cor:a.cor,
+    titulo:(document.getElementById("at-titulo-"+i)||{}).value||a.titulo,
+    revista:(document.getElementById("at-revista-"+i)||{}).value||a.revista,
+    resumo:(document.getElementById("at-resumo-"+i)||{}).value||a.resumo,
+  }));
+  db.ref(ROOT+"/artigos").set(arts).then(()=>{
+    document.getElementById("art-ico").textContent="✓";
+    document.getElementById("art-msg").textContent="✓ Salvo em "+new Date().toLocaleTimeString("pt-BR");
+    setTimeout(()=>{document.getElementById("art-ico").textContent="💾";},2500);
+  }).catch(e=>{document.getElementById("art-ico").textContent="❌";document.getElementById("art-msg").textContent=e.message;});
+}
+
+// ══ NOTAS ══
+const TAGS={geral:{l:"Geral",c:"#6B7280"},campo:{l:"Campo",c:"#16A34A"},lab:{l:"Lab",c:"#C84B11"},teoria:{l:"Teoria",c:"#7C3AED"},duvida:{l:"Dúvida",c:"#D97706"},ideia:{l:"Ideia",c:"#0369A1"}};
+let cTag="geral";
+function bTags(){const row=document.getElementById("trow");row.innerHTML="";Object.entries(TAGS).forEach(([k,{l,c}])=>{const b=document.createElement("button");b.className="tgb"+(k==="geral"?" on":"");b.textContent=l;if(k==="geral"){b.style.background=c;b.style.borderColor=c;b.style.color="#fff";}b.onclick=()=>{cTag=k;document.querySelectorAll(".tgb").forEach(x=>{x.classList.remove("on");x.style.background="";x.style.borderColor="";x.style.color="";});b.classList.add("on");b.style.background=c;b.style.borderColor=c;b.style.color="#fff";};row.appendChild(b);});}
+function addN(){if(!db){alert("Firebase não conectado.");return;}const txt=document.getElementById("ninp").value.trim();if(!txt)return;const n={texto:txt,tag:cTag,ts:Date.now(),data:new Date().toLocaleString("pt-BR")};const ref=db.ref(ROOT+"/notas").push();n.id=ref.key;fbst("⬤ Salvando...");ref.set(n).then(()=>{document.getElementById("ninp").value="";fbst("⬤ Conectado");}).catch(()=>fbst("⬤ Erro",false));}
+function delN(id){if(!db||!confirm("Apagar?"))return;db.ref(ROOT+"/notas/"+id).remove();}
+function loadN(){if(!db)return;db.ref(ROOT+"/notas").on("value",snap=>{const list=document.getElementById("nlist"),emp=document.getElementById("nemp");const data=snap.val();if(!data){list.innerHTML="";list.appendChild(emp);emp.style.display="block";return;}emp.style.display="none";list.innerHTML="";Object.values(data).sort((a,b)=>b.ts-a.ts).forEach(n=>{const{l,c}=TAGS[n.tag]||{l:n.tag,c:"#6B7280"};const div=document.createElement("div");div.className="ni";div.innerHTML=`<div class="ntag" style="background:${c}22;color:${c};border:1px solid ${c}44">${l}</div><div class="nit">${esc(n.texto)}</div><div class="nim"><span>${n.data||""}</span><button class="ndel" onclick="delN('${n.id}')">🗑 apagar</button></div>`;list.appendChild(div);});});}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// ══ INIT ══
+window.addEventListener("DOMContentLoaded",function(){
+  try{buildBox();}catch(e){console.warn("buildBox:",e);}
+  try{dB();}catch(e){console.warn("dB:",e);}
+  try{dF();}catch(e){console.warn("dF:",e);}
+  try{bSw("t",(i)=>selLayer(i));}catch(e){console.warn("bSw t:",e);}
+  try{bSw("c",pkC);}catch(e){console.warn("bSw c:",e);}
+  try{bTags();}catch(e){console.warn("bTags:",e);}
+  // Preenche campos SEMPRE — independente de Firebase
+  try{
+    fill(DEF);
+    renderArtCards(ART_DEF);
+    const th=document.getElementById("art-proj-titulo");
+    if(th) th.textContent=DEF.titulo;
+  }catch(e){console.warn("fill:",e);}
+});
+</script>
+</body>
+</html>
